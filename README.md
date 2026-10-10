@@ -6,6 +6,7 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
  - Change Car Anywhere
  - All DLC Packs Unlocked
  - VIP Status & Treasure Map Unlocks
+ - 4K Liveries
  - Independent Text & Audio Language Settings
  - Custom Gamerpic Support
  - Unrestricted Photo Mode
