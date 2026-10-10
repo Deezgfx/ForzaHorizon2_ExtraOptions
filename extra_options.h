@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 #define MOD_NAME "Forza Horizon 2 Extra Options"
-#define MOD_VERSION "0.2.19"
+#define MOD_VERSION "0.2.18"
 #define MOD_INI_NAME L"FH2_ExtraOptions.ini"
 #define MOD_LOG_NAME L"FH2_ExtraOptions.log"
 #define GAME_EXE_NAME L"forza_durango_release_final.exe"
@@ -35,8 +35,7 @@ typedef enum {
     GROUP_PARENTAL,
     GROUP_GAMERPIC,
     GROUP_PHOTO_CAMERA,
-    GROUP_TREASURE_MAP,
-    GROUP_AUTODRIVE
+    GROUP_TREASURE_MAP
 } PatchGroup;
 
 typedef struct {
@@ -66,7 +65,5 @@ typedef struct {
     int custom_gamerpic;
     int free_photo_camera;
     int unlock_treasure_map;
-    int autodrive;
-    int autodrive_cinematic;
 } ModOptions;
 #endif

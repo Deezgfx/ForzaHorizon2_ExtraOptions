@@ -21,15 +21,12 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
     log_start(settings_directory, &options);
     if (initialized && options.enabled &&
         (options.garage_from_pause || options.text_language >= 0 || options.audio_language >= 0 ||
-         options.custom_gamerpic || options.autodrive)) {
+         options.custom_gamerpic)) {
         log_set_directory(settings_directory);
         if (options.garage_from_pause) {
             log_append("GARAGE: XML parse hook installed; awaiting menu-flow resources.\r\n");
         }
         log_append(language_diagnostics_get());
-        if (options.autodrive) {
-            log_append("AUTODRIVE: experimental F2 GPS/AI hooks installed; cinematic delay is 3 seconds.\r\n");
-        }
         if (options.custom_gamerpic) {
             log_append("GAMERPIC: converter hook installed; Gamerpic.png is read from the settings "
                        "folder on the first local-player request.\r\n");

@@ -23,8 +23,6 @@ COMMON_SOURCES = [
     "features/road_placement.c",
     "features/gamerpic.c",
     "features/treasure_map.c",
-    "features/autodrive.c",
-    "features/autodrive_game.c",
     "features/png_validation.c",
     "features/png_decode.c",
 ]

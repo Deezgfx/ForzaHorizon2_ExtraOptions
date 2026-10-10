@@ -21,8 +21,6 @@ const SettingDefinition setting_definitions[] = {
     SETTING("Compatibility", "DisableParentalLocks", disable_parental_locks, SETTING_BOOLEAN),
     SETTING("Profile", "CustomGamerpic", custom_gamerpic, SETTING_BOOLEAN),
     SETTING("PhotoMode", "FreeCamera", free_photo_camera, SETTING_BOOLEAN),
-    SETTING("Autodrive", "Enabled", autodrive, SETTING_BOOLEAN),
-    SETTING("Autodrive", "Cinematic", autodrive_cinematic, SETTING_BOOLEAN),
     {"Language", "Text", "TextLanguage", offsetof(ModOptions, text_language),
      SETTING_TEXT_LANGUAGE},
     {"Language", "Audio", "AudioLanguage", offsetof(ModOptions, audio_language),
@@ -52,8 +50,6 @@ void settings_defaults(ModOptions *options) {
         .custom_gamerpic = 1,
         .free_photo_camera = 1,
         .unlock_treasure_map = 0,
-        .autodrive = 0,
-        .autodrive_cinematic = 1,
     };
 }
 
