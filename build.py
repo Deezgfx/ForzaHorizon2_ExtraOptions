@@ -23,6 +23,10 @@ COMMON_SOURCES = [
     "features/road_placement.c",
     "features/gamerpic.c",
     "features/treasure_map.c",
+    "features/autodrive.c",
+    "features/autodrive_game.c",
+    "features/autodrive_notice.c",
+    "features/autodrive_ui.c",
     "features/png_validation.c",
     "features/png_decode.c",
 ]
@@ -78,7 +82,17 @@ def compiler_arguments(compiler, options):
 def build(compiler, output, directory, options):
     directory.mkdir(parents=True, exist_ok=True)
     objects = []
-    sources = [*COMMON_SOURCES, "adapters/azimuth.c" if options.azimuth else "adapters/mezcal.c"]
+    sources = [*COMMON_SOURCES]
+    sources.extend(
+        [
+            "adapters/azimuth.c",
+            "adapters/azimuth_host.c",
+            "adapters/azimuth_livery.c",
+            "adapters/azimuth_save.c",
+        ]
+        if options.azimuth
+        else ["adapters/mezcal.c"]
+    )
     arguments = compiler_arguments(compiler, options)
     for filename in sources:
         object_file = directory / (Path(filename).stem + ".obj")

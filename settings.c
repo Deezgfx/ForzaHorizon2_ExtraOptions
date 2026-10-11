@@ -19,8 +19,14 @@ const SettingDefinition setting_definitions[] = {
     SETTING("Content", "UnlockStormIslandCars", unlock_storm_island_cars, SETTING_BOOLEAN),
     SETTING("Content", "UnlockTreasureMap", unlock_treasure_map, SETTING_BOOLEAN),
     SETTING("Compatibility", "DisableParentalLocks", disable_parental_locks, SETTING_BOOLEAN),
+    SETTING("Compatibility", "DisableAzimuthSaveChecksums", disable_azimuth_save_checksums,
+            SETTING_BOOLEAN),
     SETTING("Profile", "CustomGamerpic", custom_gamerpic, SETTING_BOOLEAN),
     SETTING("PhotoMode", "FreeCamera", free_photo_camera, SETTING_BOOLEAN),
+    SETTING("Graphics", "SmoothSunShadows", smooth_sun_shadows, SETTING_BOOLEAN),
+    {"Autodrive", "Enabled", "AutodriveEnabled", offsetof(ModOptions, autodrive), SETTING_BOOLEAN},
+    {"Autodrive", "Cinematic", "AutodriveCinematic", offsetof(ModOptions, autodrive_cinematic),
+     SETTING_BOOLEAN},
     {"Language", "Text", "TextLanguage", offsetof(ModOptions, text_language),
      SETTING_TEXT_LANGUAGE},
     {"Language", "Audio", "AudioLanguage", offsetof(ModOptions, audio_language),
@@ -50,6 +56,10 @@ void settings_defaults(ModOptions *options) {
         .custom_gamerpic = 1,
         .free_photo_camera = 1,
         .unlock_treasure_map = 0,
+        .autodrive = 0,
+        .autodrive_cinematic = 1,
+        .disable_azimuth_save_checksums = 1,
+        .smooth_sun_shadows = 0,
     };
 }
 

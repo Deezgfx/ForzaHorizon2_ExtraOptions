@@ -19,6 +19,7 @@ SUPPORTED_GROUPS = {
     "PARENTAL",
     "PHOTO_CAMERA",
     "TREASURE_MAP",
+    "SUN_SHADOWS",
 }
 
 

@@ -2,14 +2,29 @@
 #define FH2_AUTODRIVE_GAME_H
 #include "extra_options.h"
 
-typedef struct { void *object, *counter; } GameShared;
 typedef struct {
+    void *object, *counter;
+} GameShared;
+
+typedef struct {
+    GameShared wrapper;
     GameShared object;
-    unsigned char previous;
 } AutodriveHud;
 
+typedef struct {
+    void *camera, *relative;
+    int previous_group;
+    double previous_selection, selection;
+    unsigned char label;
+    int cycling;
+} AutodriveCamera;
+
 void autodrive_game_bind(unsigned char *image);
+int autodrive_game_get_hud(AutodriveHud *hud);
+void autodrive_game_release_shared(GameShared *value);
 int autodrive_game_is_freeroam(void);
+int autodrive_game_dpad_down(void **controller);
+int autodrive_game_driving_input(void *controller);
 void *autodrive_game_get_car(void);
 void autodrive_game_release_car(void *car);
 int autodrive_game_driver_mode(void *car);
@@ -21,6 +36,8 @@ void autodrive_game_end_route(void *tracker);
 void *autodrive_game_camera(void);
 int autodrive_game_camera_group(void *camera);
 int autodrive_game_set_camera_group(void *camera, int group);
-void autodrive_game_hide_huds(AutodriveHud huds[2]);
-void autodrive_game_restore_huds(AutodriveHud huds[2]);
+int autodrive_game_slow_spin(AutodriveCamera *saved);
+void autodrive_game_cycle_camera(AutodriveCamera *saved);
+int autodrive_game_restore_camera(AutodriveCamera *saved);
+int autodrive_game_flash(void *camera);
 #endif

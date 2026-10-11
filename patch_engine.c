@@ -1,9 +1,10 @@
 #include "patch_engine.h"
 #include "features.h"
+#include "features/autodrive_notice.h"
 #include "patches_generated.h"
 #include "support.h"
 
-#define CALLBACK_PATCH_COUNT 5
+#define CALLBACK_PATCH_COUNT 18
 #define ALL_PATCH_COUNT (FIXED_PATCH_COUNT + CALLBACK_PATCH_COUNT)
 #define MAX_PATCH_PAGES 64
 
@@ -20,8 +21,12 @@ typedef struct {
 
 static unsigned char original_bytes[ALL_PATCH_COUNT][MAX_PATCH_SIZE];
 static const PatchDefinition *const callback_patches[CALLBACK_PATCH_COUNT] = {
-    &garage_hook_patch, &language_hook_patch, &road_hook_patch, &gamerpic_hook_patch,
-    &treasure_map_hook_patch};
+    &garage_hook_patch,           &language_hook_patch,        &road_hook_patch,
+    &gamerpic_hook_patch,         &treasure_map_hook_patch,    &autodrive_hook_patches[0],
+    &autodrive_hook_patches[1],   &autodrive_hook_patches[2],  &autodrive_hook_patches[3],
+    &autodrive_hook_patches[4],   &autodrive_hook_patches[5],  &autodrive_hook_patches[6],
+    &autodrive_notice_hook_patch, &autodrive_hook_patches[7],  &autodrive_hook_patches[8],
+    &autodrive_hook_patches[9],   &autodrive_hook_patches[10], &autodrive_hook_patches[11]};
 
 #ifdef FH2_TWEAKS_TEST
 static int protect_failure_at = -1;
@@ -38,6 +43,12 @@ static const PatchDefinition *patch_at(unsigned index) {
 static const unsigned char *patch_target(const PatchDefinition *patch, const ModOptions *options) {
     int enabled = 0;
     switch (patch->group) {
+        case GROUP_SUN_SHADOWS:
+            enabled = options->smooth_sun_shadows;
+            break;
+        case GROUP_AUTODRIVE:
+            enabled = options->autodrive;
+            break;
         case GROUP_TREASURE_MAP:
             enabled = options->unlock_treasure_map;
             break;
@@ -139,7 +150,7 @@ static int validate_patch_sites(PatchTransaction *transaction) {
 
 static int pin_callback_module(const ModOptions *options) {
     if (!options->garage_from_pause && options->text_language < 0 && !options->custom_gamerpic &&
-        !options->unlock_treasure_map) {
+        !options->unlock_treasure_map && !options->autodrive) {
         return 1;
     }
     HMODULE pinned_module;
@@ -277,6 +288,7 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
     road_prepare_hook(game_image);
     gamerpic_prepare_hook(game_image);
     treasure_map_prepare_hook(game_image);
+    autodrive_prepare_hooks(game_image, options);
 
     PatchTransaction transaction;
     transaction.game_image = game_image;

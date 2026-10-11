@@ -17,6 +17,7 @@ EXPORTS
     ReadProcessMemory
     VirtualQuery
     GetCurrentThreadId
+    GetCurrentProcessId
     GetFullPathNameW
     GetPrivateProfileStringW
     ExitProcess
@@ -26,3 +27,4 @@ EXPORTS
     LoadLibraryExW
     GetProcAddress
     FreeLibrary
+        

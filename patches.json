@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "0.2.18",
+  "version": "0.2.34",
   "filename": "forza_durango_release_final.exe",
   "size": 58204160,
   "original_sha256": "3ec04c6163fb5614e3d351ba0570d39b846041a257715d6340eceb03ccb7f0a3",
@@ -516,6 +516,45 @@
       ]
     },
     {
+      "id": "sun_shadow_all_cascades_per_frame",
+      "group": "sun_shadows",
+      "rva": 18029570,
+      "offset": 18027010,
+      "original": "418b86bc210000",
+      "accepted": [
+        "418b86bc210000",
+        "b8040000009090"
+      ],
+      "patched": "b8040000009090",
+      "runtime_group": "SUN_SHADOWS"
+    },
+    {
+      "id": "sun_shadow_cascade_direction_refresh",
+      "group": "sun_shadows",
+      "offset": 18166874,
+      "original": "750c",
+      "accepted": [
+        "750c",
+        "eb0c"
+      ],
+      "patched": "eb0c",
+      "rva": 18169434,
+      "runtime_group": "SUN_SHADOWS"
+    },
+    {
+      "id": "sun_shadow_focus_direction_refresh",
+      "group": "sun_shadows",
+      "offset": 18173109,
+      "original": "7306",
+      "accepted": [
+        "7306",
+        "9090"
+      ],
+      "patched": "9090",
+      "rva": 18175669,
+      "runtime_group": "SUN_SHADOWS"
+    },
+    {
       "id": "livery_5",
       "group": "livery",
       "offset": 18990753,
@@ -870,6 +909,123 @@
       "discovery_function_rva": 5237008,
       "state_offset": 256,
       "position_offset": 296
+    },
+    {
+      "id": "autodrive_gps_update",
+      "rva": 46936472,
+      "original_function_rva": 7032112,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_gps_deactivation",
+      "rva": 46936496,
+      "original_function_rva": 7081072,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_tracker_update",
+      "rva": 46936712,
+      "original_function_rva": 7032384,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_tracker_destruction",
+      "rva": 46936696,
+      "original_function_rva": 6956768,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_pause_entry",
+      "rva": 47277720,
+      "original_function_rva": 9345248,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_event_context_entry",
+      "rva": 47311440,
+      "original_function_rva": 9513056,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_wait_render",
+      "rva": 48754752,
+      "original_function_rva": 18091728,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_notice_text",
+      "rva": 49084104,
+      "original_function_rva": 21014528,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_draw",
+      "rva": 49085096,
+      "original_function_rva": 22761888,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_present",
+      "rva": 49085088,
+      "original_function_rva": 22761744,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_wait_render_plain",
+      "rva": 48771752,
+      "original_function_rva": 18091728,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_draw_base",
+      "rva": 49320072,
+      "original_function_rva": 22761888,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
+    },
+    {
+      "id": "autodrive_ui_present_base",
+      "rva": 49320064,
+      "original_function_rva": 22761744,
+      "runtime_group": "AUTODRIVE",
+      "type": "relocated_vtable_pointer",
+      "file_normalized": false,
+      "option": "Autodrive.Enabled"
     }
   ]
 }

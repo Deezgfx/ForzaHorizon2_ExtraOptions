@@ -5,6 +5,10 @@
 #include "features.h"
 #include "patch_engine.h"
 
+#ifdef FH2_AZIMUTH
+#include "adapters/azimuth_host.h"
+#endif
+
 int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path,
                        const wchar_t *settings_directory) {
     ModOptions options;
@@ -19,14 +23,25 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
         initialized = patch_engine_apply(game_image, &options);
     }
     log_start(settings_directory, &options);
+#ifdef FH2_AZIMUTH
+    if (initialized && options.enabled) {
+        log_set_directory(settings_directory);
+        azimuth_apply_livery_compatibility();
+        azimuth_apply_save_compatibility(options.disable_azimuth_save_checksums);
+    }
+#endif
     if (initialized && options.enabled &&
         (options.garage_from_pause || options.text_language >= 0 || options.audio_language >= 0 ||
-         options.custom_gamerpic)) {
+         options.custom_gamerpic || options.autodrive)) {
         log_set_directory(settings_directory);
         if (options.garage_from_pause) {
             log_append("GARAGE: XML parse hook installed; awaiting menu-flow resources.\r\n");
         }
         log_append(language_diagnostics_get());
+        if (options.autodrive) {
+            log_append("AUTODRIVE: experimental F2 GPS/AI hooks installed; cinematic delay is 3 "
+                       "seconds.\r\n");
+        }
         if (options.custom_gamerpic) {
             log_append("GAMERPIC: converter hook installed; Gamerpic.png is read from the settings "
                        "folder on the first local-player request.\r\n");

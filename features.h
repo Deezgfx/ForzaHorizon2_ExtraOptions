@@ -6,6 +6,7 @@ extern PatchDefinition language_hook_patch;
 extern PatchDefinition road_hook_patch;
 extern PatchDefinition gamerpic_hook_patch;
 extern PatchDefinition treasure_map_hook_patch;
+extern PatchDefinition autodrive_hook_patches[12];
 extern const char *const language_codes[LANGUAGE_COUNT];
 void garage_prepare_hook(unsigned char *game_image);
 void *garage_callback_address(void);
@@ -20,5 +21,6 @@ int language_parse_setting(const char *value, int audio, int *selection);
 void road_prepare_hook(unsigned char *game_image);
 void gamerpic_prepare_hook(unsigned char *game_image);
 void treasure_map_prepare_hook(unsigned char *game_image);
+void autodrive_prepare_hooks(unsigned char *game_image, const ModOptions *options);
 void gamerpic_set_directory(const wchar_t *directory);
 #endif
