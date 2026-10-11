@@ -4,12 +4,14 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
 # Features
  - Intro Skip
  - Change Car Anywhere
+ - Autodrive (Inspired by the feature of same name from Forza Horizon 6)
  - All DLC Packs Unlocked
  - VIP Status & Treasure Map Unlocks
- - 4K Liveries
  - Independent Text & Audio Language Settings
- - Custom Gamerpic Support
+ - 4K Liveries w/ Enhanced Sampling
  - Unrestricted Photo Mode
+ - Custom Gamerpic Support
+ - Bypass Azimuth's Save Data Tamper Checks
 
 You can toggle and tweak any of these features in the INI file.
 
