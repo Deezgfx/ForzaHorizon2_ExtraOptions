@@ -15,6 +15,8 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
 
 You can toggle and tweak any of these features in the INI file.
 
+Autodrive is engaged with D-Pad Down on a controller or F2 on a keyboard.
+
 The treasure map is disabled by default. Open the INI and set "UnlockTreasureMap" to 1 if you wish to have it.
 
 This mod does not let you go to the Storm Island map if you don't have it installed. The DLC itself and its contents, including vehicles, are unlocked, but you will only be able to travel there if you have the files for the Storm Island DLC installed. Currently, that is only possible in Mezcal.
