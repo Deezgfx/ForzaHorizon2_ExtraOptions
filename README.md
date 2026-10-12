@@ -15,7 +15,7 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
 
 You can toggle and tweak any of these features in the INI file.
 
-Autodrive is engaged with D-Pad Down on a controller or F2 on a keyboard.
+Autodrive is engaged with D-Pad Down on a controller or F2 on a keyboard. Player control is restored on any driving input or when pausing the game.
 
 The treasure map is disabled by default. Open the INI and set "UnlockTreasureMap" to 1 if you wish to have it.
 
