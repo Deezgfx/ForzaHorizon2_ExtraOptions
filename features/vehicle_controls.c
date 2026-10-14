@@ -17,7 +17,11 @@ typedef void *(*VelocityGetter)(void *, float *);
 typedef void (*AnimationEvent)(void *, const char *);
 
 typedef struct {
-    char text[16];
+    union {
+        char text[16];
+        const char *pointer;
+    } storage;
+
     size_t length, capacity;
 } AnimationName;
 
@@ -35,7 +39,7 @@ PatchDefinition vehicle_controls_hook_patch;
 typedef struct {
     void *controller, *car, *animation;
     uint64_t pressed_at;
-    int blocked, pending, consumed, stationary, roof_blocked;
+    int blocked, pending, consumed, stationary, roof_blocked, freeroam;
 } VehicleGesture;
 
 static VehicleGesture gesture = {.blocked = 1};
@@ -56,7 +60,20 @@ typedef struct {
 
 static RoofState roof;
 
-typedef enum { ROOF_FADE_IDLE, ROOF_FADE_OUT, ROOF_COVERED, ROOF_FADE_IN } RoofFadePhase;
+static struct {
+    void *car, *animation;
+    int active, enabled;
+} popup_lights;
+
+static void *car_meet_car, *car_meet_animation;
+
+typedef enum {
+    ROOF_FADE_IDLE,
+    ROOF_FADE_OUT,
+    ROOF_COVERED,
+    ROOF_FADE_IN,
+    ROOF_MEET_CLOSE
+} RoofFadePhase;
 
 static struct {
     RoofFadePhase phase;
@@ -94,6 +111,8 @@ void vehicle_controls_bind(unsigned char *image) {
         gesture = (VehicleGesture){.blocked = 1};
         headlights = (HeadlightState){0};
         roof = (RoofState){0};
+        popup_lights.active = 0;
+        car_meet_car = car_meet_animation = NULL;
         roof_lock.remaining = 0;
     }
     game_image = image;
@@ -118,8 +137,10 @@ static void cancel_gesture(void) {
     gesture.pending = 0;
     gesture.blocked = 1;
     gesture.car = gesture.animation = NULL;
-    roof.pending_event = NULL;
-    finish_roof_transition();
+    if (roof_transition.phase != ROOF_MEET_CLOSE) {
+        roof.pending_event = NULL;
+        finish_roof_transition();
+    }
 }
 
 static void *car_animation(void *car);
@@ -234,14 +255,45 @@ static int has_animation_event(void *animation, const char *name) {
         return 0;
     }
     AnimationName key = {.length = text_length(name), .capacity = 15};
-    if (key.length >= sizeof(key.text)) {
-        return 0;
+    if (key.length < sizeof(key.storage.text)) {
+        memory_copy(key.storage.text, name, key.length);
+    } else {
+        key.storage.pointer = name;
+        key.capacity = key.length;
     }
-    memory_copy(key.text, name, key.length);
     void *entry = NULL;
     ((FindAnimationEvent)(game_image + 0x16fd4d0))((unsigned char *)animation + 0x268, &entry,
                                                    &key);
     return entry && entry != (void *)map[0];
+}
+
+static void update_popup_lights(void *car, void *animation, uint64_t now) {
+    if (!roof.active || roof.car != car || roof.animation != animation || now < roof.ready_at) {
+        return;
+    }
+    unsigned char manual, forced, automatic;
+    unsigned char *bytes = car;
+    if (!memory_read(bytes + 0x51a1, &manual, 1) || !memory_read(bytes + 0x51a2, &forced, 1) ||
+        !memory_read(bytes + 0x51b4, &automatic, 1)) {
+        return;
+    }
+    int enabled = manual ? forced != 0 : automatic != 0;
+    if (popup_lights.active && popup_lights.car == car && popup_lights.animation == animation &&
+        popup_lights.enabled == enabled) {
+        return;
+    }
+    static const char *events[2][2] = {{"headlightL:close", "headlightR:close"},
+                                       {"headlightL:open", "headlightR:open"}};
+    for (unsigned side = 0; side < 2; ++side) {
+        const char *event = events[enabled][side];
+        if (has_animation_event(animation, event)) {
+            ((AnimationEvent)(game_image + 0xf5d300))(car, event);
+        }
+    }
+    popup_lights.car = car;
+    popup_lights.animation = animation;
+    popup_lights.enabled = enabled;
+    popup_lights.active = 1;
 }
 
 static void request_roof_toggle(void *car, void *animation, uint64_t now) {
@@ -253,6 +305,7 @@ static void request_roof_toggle(void *car, void *animation, uint64_t now) {
         roof.car = car;
         roof.animation = animation;
         roof.open = 0;
+        popup_lights.active = 0;
     }
     roof.active = 1;
     ((AnimationDetail)(game_image + 0x16fbe90))(animation, 0);
@@ -278,6 +331,57 @@ static void request_roof_toggle(void *car, void *animation, uint64_t now) {
     }
 }
 
+static void close_roof_for_car_meet(void *car) {
+    if (!autodrive_game_is_carmeet()) {
+        car_meet_car = car_meet_animation = NULL;
+        return;
+    }
+    void *animation = car_animation(car);
+    if (car_meet_car == car && car_meet_animation == animation) {
+        return;
+    }
+    size_t event_count;
+    if (!animation ||
+        !memory_read((unsigned char *)animation + 0x270, &event_count, sizeof(event_count)) ||
+        !event_count) {
+        return;
+    }
+    finish_roof_transition();
+    cancel_gesture();
+    roof_lock.remaining = 0.0f;
+    if (!has_animation_event(animation, "roof:close")) {
+        car_meet_car = car;
+        car_meet_animation = animation;
+        return;
+    }
+    void *animator;
+    float speed;
+    if (!memory_read_pointer((unsigned char *)car + 0x4d40, &animator) ||
+        !memory_read((unsigned char *)animator + 0x20, &speed, sizeof(speed)) ||
+        !float_is_finite(speed) || speed < 0.0f) {
+        return;
+    }
+    car_meet_car = car;
+    car_meet_animation = animation;
+    uint64_t now = clock_milliseconds();
+    if (roof.car != car || roof.animation != animation) {
+        roof.open = 0;
+    }
+    roof.car = car;
+    roof.animation = animation;
+    roof.active = 1;
+    ((AnimationDetail)(game_image + 0x16fbe90))(animation, 0);
+    roof.pending_event = "roof:close";
+    roof.ready_at = now + ROOF_BRANCH_SETTLE_MILLISECONDS;
+    roof_transition.phase = ROOF_MEET_CLOSE;
+    roof_transition.started_at = now;
+    roof_transition.car = car;
+    roof_transition.animator = animator;
+    roof_transition.animation = roof.animation;
+    roof_transition.original_speed = speed;
+    roof_transition.accelerated = 0;
+}
+
 static void vehicle_controls_tick(void *car, int focused) {
     void *controller;
     unsigned short buttons;
@@ -295,7 +399,9 @@ static void vehicle_controls_tick(void *car, int focused) {
     if (gesture.blocked) {
         return;
     }
-    if (!autodrive_game_is_freeroam()) {
+    int freeroam = autodrive_game_is_freeroam();
+    if (!autodrive_game_has_gameplay_input(controller) ||
+        (gesture.pending && gesture.freeroam != freeroam)) {
         cancel_gesture();
         return;
     }
@@ -309,8 +415,9 @@ static void vehicle_controls_tick(void *car, int focused) {
         gesture.animation = animation;
         gesture.pending = 1;
         gesture.consumed = 0;
+        gesture.freeroam = freeroam;
         gesture.pressed_at = clock_milliseconds();
-        gesture.stationary = car_is_stationary(car);
+        gesture.stationary = freeroam && car_is_stationary(car);
         gesture.roof_blocked = roof_is_busy(car);
     } else if (gesture.car != car || gesture.animation != animation) {
         cancel_gesture();
@@ -338,13 +445,22 @@ static void update_roof_transition(void *car, void *animation, uint64_t now) {
     if (roof_transition.phase == ROOF_FADE_IDLE) {
         return;
     }
+    int meet_close = roof_transition.phase == ROOF_MEET_CLOSE;
     if (car != roof_transition.car || animation != roof_transition.animation ||
-        !autodrive_game_window_focused() || !autodrive_game_is_freeroam()) {
+        (meet_close ? !autodrive_game_is_carmeet()
+                    : !autodrive_game_window_focused() || !autodrive_game_is_freeroam())) {
         roof.pending_event = NULL;
         finish_roof_transition();
         return;
     }
     uint64_t elapsed = now - roof_transition.started_at;
+    if (meet_close) {
+        if (!roof.pending_event && elapsed >= ROOF_COVER_MILLISECONDS) {
+            finish_roof_transition();
+            roof.active = 0;
+        }
+        return;
+    }
     if (roof_transition.phase == ROOF_FADE_OUT) {
         float opacity =
             elapsed < ROOF_FADE_MILLISECONDS ? (float)elapsed / ROOF_FADE_MILLISECONDS : 1.0f;
@@ -389,22 +505,27 @@ static void maintain_controls(void *car) {
         memory_read((unsigned char *)animation + 0x10, &detail, 4) && detail != 0) {
         ((AnimationDetail)(game_image + 0x16fbe90))(animation, 0);
     }
+    update_popup_lights(car, animation, now);
     if (roof.pending_event && roof.car == car && roof.animation == animation &&
         now >= roof.ready_at &&
-        (roof_transition.phase == ROOF_FADE_IDLE || roof_fade_black_frame_presented())) {
+        (roof_transition.phase == ROOF_FADE_IDLE || roof_transition.phase == ROOF_MEET_CLOSE ||
+         roof_fade_black_frame_presented())) {
         const char *event = roof.pending_event;
         roof.pending_event = NULL;
-        if (autodrive_game_is_freeroam() && car_is_stationary(car)) {
-            if (roof_transition.phase == ROOF_FADE_OUT) {
+        int meet_close = roof_transition.phase == ROOF_MEET_CLOSE;
+        if (meet_close || (autodrive_game_is_freeroam() && car_is_stationary(car))) {
+            if (roof_transition.phase == ROOF_FADE_OUT || meet_close) {
                 ((AnimationSpeed)(game_image + 0xf74e00))(car, ROOF_COVER_SPEED);
                 roof_transition.accelerated = 1;
-                roof_transition.phase = ROOF_COVERED;
+                if (!meet_close) {
+                    roof_transition.phase = ROOF_COVERED;
+                }
                 roof_transition.started_at = now;
             }
             ((AnimationEvent)(game_image + 0xf5d300))(car, event);
-            roof.open = !roof.open;
+            roof.open = meet_close ? 0 : !roof.open;
             void *animator;
-            if (memory_read_pointer((unsigned char *)car + 0x4d40, &animator)) {
+            if (!meet_close && memory_read_pointer((unsigned char *)car + 0x4d40, &animator)) {
                 float duration = roof_animation_duration(car);
                 roof_lock.car = car;
                 roof_lock.animator = animator;
@@ -424,6 +545,7 @@ static void vehicle_update(void *self, float dt, float frame_dt, unsigned frame)
     void *local_car = autodrive_game_get_car();
     int owned = local_car == self;
     if (owned) {
+        close_roof_for_car_meet(local_car);
         vehicle_controls_tick(local_car, autodrive_game_window_focused());
         maintain_controls(self);
     }
@@ -444,6 +566,8 @@ __declspec(dllexport) void Fh2TestVehicleReset(void) {
     gesture = (VehicleGesture){.blocked = 1};
     headlights = (HeadlightState){0};
     roof = (RoofState){0};
+    popup_lights.active = 0;
+    car_meet_car = car_meet_animation = NULL;
     roof_lock.remaining = 0.0f;
 }
 

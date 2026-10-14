@@ -98,13 +98,17 @@ int autodrive_game_driving_input(void *controller) {
     return triggers[0] || triggers[1] || steering < -0.05f || steering > 0.05f;
 }
 
-int autodrive_game_is_freeroam(void) {
-    void *game, *simulation, *hud_manager, *services;
+static int simulation_is_running(void) {
+    void *game, *simulation;
     unsigned char paused;
-    if (!memory_read_pointer(image + GAME_RVA_PLAYER_MANAGER, &game) ||
-        !memory_read_pointer((unsigned char *)game + 0x48, &simulation) ||
-        !memory_read((unsigned char *)simulation + 0x28, &paused, 1) || paused ||
-        !memory_read_pointer(image + 0x34c0f40, &hud_manager) ||
+    return memory_read_pointer(image + GAME_RVA_PLAYER_MANAGER, &game) &&
+           memory_read_pointer((unsigned char *)game + 0x48, &simulation) &&
+           memory_read((unsigned char *)simulation + 0x28, &paused, 1) && !paused;
+}
+
+int autodrive_game_is_freeroam(void) {
+    void *hud_manager, *services;
+    if (!simulation_is_running() || !memory_read_pointer(image + 0x34c0f40, &hud_manager) ||
         !memory_read_pointer((unsigned char *)hud_manager + 8, &services)) {
         return 0;
     }
@@ -116,13 +120,13 @@ int autodrive_game_is_freeroam(void) {
     return event_context == 2;
 }
 
-int autodrive_game_can_start(void *controller) {
+int autodrive_game_has_gameplay_input(void *controller) {
     struct {
         void *proxy, **blocks;
         size_t capacity, start, count;
     } contexts;
 
-    if (!controller || !autodrive_game_is_freeroam() ||
+    if (!controller || !simulation_is_running() ||
         !memory_read((unsigned char *)controller + 0x38, &contexts, sizeof(contexts))) {
         return 0;
     }
@@ -138,6 +142,25 @@ int autodrive_game_can_start(void *controller) {
            memory_read((unsigned char *)block + (contexts.start % 2) * 8 + 4, &permissions,
                        sizeof(permissions)) &&
            (permissions & 1);
+}
+
+int autodrive_game_can_start(void *controller) {
+    return autodrive_game_is_freeroam() && autodrive_game_has_gameplay_input(controller);
+}
+
+int autodrive_game_is_carmeet(void) {
+    void *services, *manager, *head;
+    if (!memory_read_pointer(image + 0x354f4f8, &services) ||
+        !memory_read_pointer((unsigned char *)services + 0x50, &manager) ||
+        !memory_read_pointer((unsigned char *)manager + 8, &head)) {
+        return 0;
+    }
+    GameShared presentation = {0};
+    ((SharedGetter)game_function(0xf9ae70))(manager, &presentation);
+    int mode = -1;
+    memory_read((unsigned char *)presentation.object + 0x3cc, &mode, sizeof(mode));
+    autodrive_game_release_shared(&presentation);
+    return mode == 11;
 }
 
 void *autodrive_game_get_car(void) {

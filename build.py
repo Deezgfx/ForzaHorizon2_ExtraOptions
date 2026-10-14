@@ -24,6 +24,7 @@ COMMON_SOURCES = [
     "features/treasure_map.c",
     "features/minimap.c",
     "features/rims.c",
+    "features/stock_wheels.c",
     "features/drift_camera.c",
     "features/video_settings.c",
     "features/camera_fov.c",

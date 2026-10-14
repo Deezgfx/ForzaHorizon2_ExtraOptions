@@ -265,6 +265,10 @@ static const unsigned char all_rims_items_query_bytes_0[] = {0xe8, 0xe4, 0xd0, 0
 static const unsigned char all_rims_items_query_bytes_1[] = {0xff, 0x15, 0xcb, 0x02, 0x00, 0x00};
 static const unsigned char *const all_rims_items_query_accepted[] = {all_rims_items_query_bytes_0,
                                                                      all_rims_items_query_bytes_1};
+static const unsigned char stock_wheel_archive_preload_bytes_0[] = {0xe8, 0xff, 0x31, 0x2e, 0xff};
+static const unsigned char stock_wheel_archive_preload_bytes_1[] = {0xe8, 0x53, 0xd1, 0xef, 0xff};
+static const unsigned char *const stock_wheel_archive_preload_accepted[] = {
+    stock_wheel_archive_preload_bytes_0, stock_wheel_archive_preload_bytes_1};
 static const unsigned char drift_camera_heading_call_bytes_0[] = {0xe8, 0x84, 0x13, 0xee, 0xff};
 static const unsigned char drift_camera_heading_call_bytes_1[] = {0xe8, 0x93, 0x48, 0x00, 0x00};
 static const unsigned char *const drift_camera_heading_call_accepted[] = {
@@ -289,6 +293,14 @@ static const unsigned char sun_shadow_focus_direction_refresh_bytes_0[] = {0x73,
 static const unsigned char sun_shadow_focus_direction_refresh_bytes_1[] = {0x90, 0x90};
 static const unsigned char *const sun_shadow_focus_direction_refresh_accepted[] = {
     sun_shadow_focus_direction_refresh_bytes_0, sun_shadow_focus_direction_refresh_bytes_1};
+static const unsigned char stock_wheel_models_startup_bytes_0[] = {0xe8, 0x50, 0x1d, 0x00, 0x00};
+static const unsigned char stock_wheel_models_startup_bytes_1[] = {0xe8, 0xc2, 0x09, 0xd2, 0xff};
+static const unsigned char *const stock_wheel_models_startup_accepted[] = {
+    stock_wheel_models_startup_bytes_0, stock_wheel_models_startup_bytes_1};
+static const unsigned char stock_wheel_models_preview_bytes_0[] = {0xe8, 0x7b, 0x00, 0x00, 0x00};
+static const unsigned char stock_wheel_models_preview_bytes_1[] = {0xe8, 0xed, 0xec, 0xd1, 0xff};
+static const unsigned char *const stock_wheel_models_preview_accepted[] = {
+    stock_wheel_models_preview_bytes_0, stock_wheel_models_preview_bytes_1};
 static const unsigned char livery_5_bytes_0[] = {0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc,
                                                  0xcc, 0xcc, 0xcc, 0xcc, 0xcc, 0xcc};
 static const unsigned char livery_5_bytes_1[] = {0x41, 0xc1, 0xe7, 0x02, 0x41, 0xc1, 0xe4,
@@ -340,6 +352,14 @@ static const unsigned char profile_content_privilege_bytes_1[] = {0xc7, 0x41, 0x
                                                                   0x00, 0x00, 0xc3, 0x90, 0x90};
 static const unsigned char *const profile_content_privilege_accepted[] = {
     profile_content_privilege_bytes_0, profile_content_privilege_bytes_1};
+static const unsigned char stock_wheel_archive_startup_bytes_0[] = {0xe8, 0xd7, 0x37, 0xe8, 0xfe};
+static const unsigned char stock_wheel_archive_startup_bytes_1[] = {0xe8, 0xf8, 0xf7, 0xb3, 0xff};
+static const unsigned char *const stock_wheel_archive_startup_accepted[] = {
+    stock_wheel_archive_startup_bytes_0, stock_wheel_archive_startup_bytes_1};
+static const unsigned char stock_wheel_archive_preview_bytes_0[] = {0xe8, 0x4c, 0x8b, 0xe6, 0xfe};
+static const unsigned char stock_wheel_archive_preview_bytes_1[] = {0xe8, 0x6d, 0x4b, 0xb2, 0xff};
+static const unsigned char *const stock_wheel_archive_preview_accepted[] = {
+    stock_wheel_archive_preview_bytes_0, stock_wheel_archive_preview_bytes_1};
 static const unsigned char treasure_map_island_property_bytes_0[] = {0x0f, 0xb6, 0x41,
                                                                      0x78, 0xc3, 0xcc};
 static const unsigned char treasure_map_island_property_bytes_1[] = {0xb8, 0x01, 0x00,
@@ -531,6 +551,9 @@ const PatchDefinition fixed_patches[FIXED_PATCH_COUNT] = {
      all_rims_categories_query_bytes_1, all_rims_categories_query_accepted, 2},
     {0xecf307, 0xece907, 6, GROUP_RIMS, "all_rims_items_query", all_rims_items_query_bytes_0,
      all_rims_items_query_bytes_1, all_rims_items_query_bytes_1, all_rims_items_query_accepted, 2},
+    {0xfd054c, 0xfcfb4c, 5, GROUP_RIMS, "stock_wheel_archive_preload",
+     stock_wheel_archive_preload_bytes_0, stock_wheel_archive_preload_bytes_1,
+     stock_wheel_archive_preload_bytes_1, stock_wheel_archive_preload_accepted, 2},
     {0x10369c9, 0x1035fc9, 5, GROUP_DRIFT_CAMERA, "drift_camera_heading_call",
      drift_camera_heading_call_bytes_0, drift_camera_heading_call_bytes_1,
      drift_camera_heading_call_bytes_1, drift_camera_heading_call_accepted, 2},
@@ -547,6 +570,12 @@ const PatchDefinition fixed_patches[FIXED_PATCH_COUNT] = {
     {0x11556b5, 0x1154cb5, 2, GROUP_SUN_SHADOWS, "sun_shadow_focus_direction_refresh",
      sun_shadow_focus_direction_refresh_bytes_0, sun_shadow_focus_direction_refresh_bytes_1,
      sun_shadow_focus_direction_refresh_bytes_1, sun_shadow_focus_direction_refresh_accepted, 2},
+    {0x11af25b, 0x11ae85b, 5, GROUP_RIMS, "stock_wheel_models_startup",
+     stock_wheel_models_startup_bytes_0, stock_wheel_models_startup_bytes_1,
+     stock_wheel_models_startup_bytes_1, stock_wheel_models_startup_accepted, 2},
+    {0x11b0f30, 0x11b0530, 5, GROUP_RIMS, "stock_wheel_models_preview",
+     stock_wheel_models_preview_bytes_0, stock_wheel_models_preview_bytes_1,
+     stock_wheel_models_preview_bytes_1, stock_wheel_models_preview_accepted, 2},
     {0x121d0a1, 0x121c6a1, 13, GROUP_LIVERY, "livery_5", livery_5_bytes_0, livery_5_bytes_1,
      livery_5_bytes_2, livery_5_accepted, 3},
     {0x121d1e1, 0x121c7e1, 13, GROUP_LIVERY, "livery_6", livery_6_bytes_0, livery_6_bytes_1,
@@ -571,6 +600,12 @@ const PatchDefinition fixed_patches[FIXED_PATCH_COUNT] = {
     {0x1249e90, 0x1249490, 10, GROUP_PARENTAL, "profile_content_privilege",
      profile_content_privilege_bytes_0, profile_content_privilege_bytes_1,
      profile_content_privilege_bytes_1, profile_content_privilege_accepted, 2},
+    {0x138e634, 0x138dc34, 5, GROUP_RIMS, "stock_wheel_archive_startup",
+     stock_wheel_archive_startup_bytes_0, stock_wheel_archive_startup_bytes_1,
+     stock_wheel_archive_startup_bytes_1, stock_wheel_archive_startup_accepted, 2},
+    {0x13a92bf, 0x13a88bf, 5, GROUP_RIMS, "stock_wheel_archive_preview",
+     stock_wheel_archive_preview_bytes_0, stock_wheel_archive_preview_bytes_1,
+     stock_wheel_archive_preview_bytes_1, stock_wheel_archive_preview_accepted, 2},
     {0x1657060, 0x1656660, 6, GROUP_TREASURE_MAP, "treasure_map_island_property",
      treasure_map_island_property_bytes_0, treasure_map_island_property_bytes_0,
      treasure_map_island_property_bytes_0, treasure_map_island_property_accepted, 2},

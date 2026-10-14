@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "0.2.68",
+  "version": "0.2.73",
   "filename": "forza_durango_release_final.exe",
   "size": 58204160,
   "original_sha256": "3ec04c6163fb5614e3d351ba0570d39b846041a257715d6340eceb03ccb7f0a3",
@@ -726,6 +726,21 @@
       "option": "Frontend.AllRimsCategory"
     },
     {
+      "id": "stock_wheel_archive_preload",
+      "rva": 16581964,
+      "offset": 16579404,
+      "original": "e8ff312eff",
+      "patched": "e853d1efff",
+      "accepted": [
+        "e8ff312eff",
+        "e853d1efff"
+      ],
+      "runtime_group": "RIMS",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory",
+      "description": "Use donor car archives and authored wheel geometry for stock rim swaps."
+    },
+    {
       "id": "drift_camera_heading_call",
       "group": "drift_camera",
       "rva": 17000905,
@@ -791,6 +806,36 @@
       "patched": "9090",
       "rva": 18175669,
       "runtime_group": "SUN_SHADOWS"
+    },
+    {
+      "id": "stock_wheel_models_startup",
+      "rva": 18543195,
+      "offset": 18540635,
+      "original": "e8501d0000",
+      "patched": "e8c209d2ff",
+      "accepted": [
+        "e8501d0000",
+        "e8c209d2ff"
+      ],
+      "runtime_group": "RIMS",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory",
+      "description": "Use donor car archives and authored wheel geometry for stock rim swaps."
+    },
+    {
+      "id": "stock_wheel_models_preview",
+      "rva": 18550576,
+      "offset": 18548016,
+      "original": "e87b000000",
+      "patched": "e8edecd1ff",
+      "accepted": [
+        "e87b000000",
+        "e8edecd1ff"
+      ],
+      "runtime_group": "RIMS",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory",
+      "description": "Use donor car archives and authored wheel geometry for stock rim swaps."
     },
     {
       "id": "livery_5",
@@ -963,6 +1008,36 @@
         "c7414804000000c39090"
       ],
       "runtime_group": "PARENTAL"
+    },
+    {
+      "id": "stock_wheel_archive_startup",
+      "rva": 20506164,
+      "offset": 20503604,
+      "original": "e8d737e8fe",
+      "patched": "e8f8f7b3ff",
+      "accepted": [
+        "e8d737e8fe",
+        "e8f8f7b3ff"
+      ],
+      "runtime_group": "RIMS",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory",
+      "description": "Use donor car archives and authored wheel geometry for stock rim swaps."
+    },
+    {
+      "id": "stock_wheel_archive_preview",
+      "rva": 20615871,
+      "offset": 20613311,
+      "original": "e84c8be6fe",
+      "patched": "e86d4bb2ff",
+      "accepted": [
+        "e84c8be6fe",
+        "e86d4bb2ff"
+      ],
+      "runtime_group": "RIMS",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory",
+      "description": "Use donor car archives and authored wheel geometry for stock rim swaps."
     },
     {
       "id": "treasure_map_island_property",
@@ -1398,6 +1473,33 @@
       "type": "relocated_vtable_pointer",
       "file_normalized": false,
       "option": "Global.Enabled"
+    },
+    {
+      "id": "stock_wheel_archive_text_thunk",
+      "rva": 15521444,
+      "original": "cccccccccccccccccccccccc",
+      "runtime_group": "RIMS",
+      "type": "callback_thunk_in_unused_padding",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory"
+    },
+    {
+      "id": "stock_wheel_archive_string_thunk",
+      "rva": 15523377,
+      "original": "cccccccccccccccccccccccc",
+      "runtime_group": "RIMS",
+      "type": "callback_thunk_in_unused_padding",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory"
+    },
+    {
+      "id": "stock_wheel_models_thunk",
+      "rva": 15531042,
+      "original": "cccccccccccccccccccccccc",
+      "runtime_group": "RIMS",
+      "type": "callback_thunk_in_unused_padding",
+      "file_normalized": false,
+      "option": "Frontend.AllRimsCategory"
     }
   ],
   "runtime_data": [
