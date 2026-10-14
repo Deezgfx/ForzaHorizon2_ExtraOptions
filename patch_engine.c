@@ -1,11 +1,10 @@
 #include "patch_engine.h"
 #include "features.h"
 #include "features/autodrive_notice.h"
+#include "features/roof_fade.h"
 #include "patches_generated.h"
 #include "support.h"
 
-#define CALLBACK_PATCH_COUNT 18
-#define ALL_PATCH_COUNT (FIXED_PATCH_COUNT + CALLBACK_PATCH_COUNT)
 #define MAX_PATCH_PAGES 64
 
 typedef struct {
@@ -19,14 +18,47 @@ typedef struct {
     unsigned changed_count;
 } PatchTransaction;
 
+static const PatchDefinition *const callback_patches[] = {&garage_hook_patch,
+                                                          &road_hook_patch,
+                                                          &gamerpic_hook_patch,
+                                                          &treasure_map_hook_patch,
+                                                          &vehicle_controls_hook_patch,
+                                                          &roof_fade_hook_patch,
+                                                          &autodrive_hook_patches[0],
+                                                          &autodrive_hook_patches[1],
+                                                          &autodrive_hook_patches[2],
+                                                          &autodrive_hook_patches[3],
+                                                          &autodrive_hook_patches[4],
+                                                          &autodrive_hook_patches[5],
+                                                          &autodrive_hook_patches[6],
+                                                          &autodrive_notice_hook_patch,
+                                                          &autodrive_hook_patches[7],
+                                                          &autodrive_hook_patches[8],
+                                                          &autodrive_hook_patches[9],
+                                                          &autodrive_hook_patches[10],
+                                                          &autodrive_hook_patches[11],
+                                                          &minimap_hook_patch,
+                                                          &media_overrides_hook_patch,
+                                                          &rims_hook_patch,
+                                                          &drift_camera_hook_patch,
+                                                          &drift_camera_view_hook_patches[0],
+                                                          &drift_camera_view_hook_patches[1],
+                                                          &drift_camera_view_hook_patches[2],
+                                                          &drift_camera_view_hook_patches[3],
+                                                          &video_options_hook_patches[0],
+                                                          &video_options_hook_patches[1],
+                                                          &video_options_hook_patches[2],
+                                                          &camera_fov_hook_patches[0],
+                                                          &camera_fov_hook_patches[1],
+                                                          &camera_fov_hook_patches[2],
+                                                          &camera_fov_hook_patches[3],
+                                                          &camera_fov_hook_patches[4],
+                                                          &camera_fov_hook_patches[5],
+                                                          &photo_sampling_patch};
+
+enum { ALL_PATCH_COUNT = FIXED_PATCH_COUNT + ARRAY_COUNT(callback_patches) };
+
 static unsigned char original_bytes[ALL_PATCH_COUNT][MAX_PATCH_SIZE];
-static const PatchDefinition *const callback_patches[CALLBACK_PATCH_COUNT] = {
-    &garage_hook_patch,           &language_hook_patch,        &road_hook_patch,
-    &gamerpic_hook_patch,         &treasure_map_hook_patch,    &autodrive_hook_patches[0],
-    &autodrive_hook_patches[1],   &autodrive_hook_patches[2],  &autodrive_hook_patches[3],
-    &autodrive_hook_patches[4],   &autodrive_hook_patches[5],  &autodrive_hook_patches[6],
-    &autodrive_notice_hook_patch, &autodrive_hook_patches[7],  &autodrive_hook_patches[8],
-    &autodrive_hook_patches[9],   &autodrive_hook_patches[10], &autodrive_hook_patches[11]};
 
 #ifdef FH2_TWEAKS_TEST
 static int protect_failure_at = -1;
@@ -40,73 +72,76 @@ static const PatchDefinition *patch_at(unsigned index) {
     return callback_patches[index - FIXED_PATCH_COUNT];
 }
 
-static const unsigned char *patch_target(const PatchDefinition *patch, const ModOptions *options) {
-    int enabled = 0;
-    switch (patch->group) {
+static int patch_group_enabled(PatchGroup group, const ModOptions *options) {
+    switch (group) {
+        case GROUP_CAMERA_FOV:
+        case GROUP_VIDEO_OPTIONS:
+            return 1;
+        case GROUP_PHOTO_SAMPLING:
+            return options->photo_mode_samples > 0;
+        case GROUP_DRIFT_CAMERA:
+            return 1;
+        case GROUP_RIMS:
+            return options->all_rims_category;
+        case GROUP_BOOT_CAR_MEET:
+            return options->skip_car_meet_on_startup;
+        case GROUP_MEDIA_OVERRIDES:
+            return options->media_overrides;
+        case GROUP_MINIMAP:
+            return 1;
+        case GROUP_FRONTEND_XML:
+            return options->garage_from_pause || options->skip_ineligible_car_dialogue ||
+                   (options->spawn_at_festival && options->skip_car_meet_on_startup);
         case GROUP_SUN_SHADOWS:
-            enabled = options->smooth_sun_shadows;
-            break;
+            return options->smooth_sun_shadows;
+        case GROUP_VEHICLE_CONTROLS:
+            return 1;
         case GROUP_AUTODRIVE:
-            enabled = options->autodrive;
-            break;
+            return options->autodrive;
         case GROUP_TREASURE_MAP:
-            enabled = options->unlock_treasure_map;
-            break;
+            return options->unlock_treasure_map;
         case GROUP_PHOTO_CAMERA:
-            enabled = options->free_photo_camera;
-            break;
+            return options->free_photo_camera;
         case GROUP_GAMERPIC:
-            enabled = options->custom_gamerpic;
-            break;
+            return options->custom_gamerpic;
         case GROUP_PARENTAL:
-            enabled = options->disable_parental_locks;
-            break;
+            return options->disable_parental_locks;
         case GROUP_ISLAND_CARS:
-            enabled = options->unlock_storm_island_cars;
-            break;
+            return options->unlock_storm_island_cars;
         case GROUP_ROAD:
-            enabled = options->garage_from_pause && options->snap_car_to_road;
-            break;
-        case GROUP_TEXT_RELOAD:
-            enabled = options->text_language >= 0;
-            break;
-        case GROUP_TEXT_INIT:
-            return options->text_language < 0 ? patch->original
-                                              : language_text_init_targets[options->text_language];
-        case GROUP_TEXT_LOCK:
-            enabled = options->text_language >= 0;
-            break;
-        case GROUP_AUDIO_LANGUAGE:
-            return options->audio_language < 0
-                       ? patch->original
-                       : language_audio_init_targets[options->audio_language];
+            return options->garage_from_pause;
         case GROUP_DLC:
-            enabled = options->unlock_dlc;
-            break;
+            return options->unlock_dlc;
         case GROUP_VIP:
-            enabled = options->offline_vip;
-            break;
+            return options->offline_vip;
         case GROUP_INTRO:
-            enabled = options->skip_intro;
-            break;
+            return options->skip_intro;
+        case GROUP_SOCIAL:
+            return options->enable_social;
+        case GROUP_CLUBS:
+            return options->enable_clubs;
+        case GROUP_RIVALS:
+            return options->enable_rivals;
         case GROUP_MARKETPLACE:
-            enabled = options->enable_marketplace;
-            break;
+            return options->enable_marketplace;
         case GROUP_LIVERY:
-            enabled = options->enable_4k_liveries;
-            break;
+            return options->enable_4k_liveries;
         case GROUP_MSAA:
-            enabled = options->enable_4k_liveries && options->livery_msaa == 4;
-            break;
+            return options->enable_4k_liveries && options->livery_msaa == 4;
         case GROUP_PAUSE_GARAGE:
-            enabled = options->garage_from_pause;
-            break;
+            return options->garage_from_pause;
     }
-    if (!enabled) {
+    return 0;
+}
+
+static const unsigned char *patch_target(const PatchDefinition *patch, const ModOptions *options) {
+    if (!patch_group_enabled(patch->group, options)) {
         return patch->original;
     }
-    return patch->group == GROUP_LIVERY && options->livery_supersampling ? patch->supersampled
-                                                                         : patch->standard;
+    if (patch->group == GROUP_LIVERY && options->livery_supersampling) {
+        return patch->supersampled;
+    }
+    return patch->standard;
 }
 
 static int supported_image(const unsigned char *game_image) {
@@ -149,10 +184,7 @@ static int validate_patch_sites(PatchTransaction *transaction) {
 }
 
 static int pin_callback_module(const ModOptions *options) {
-    if (!options->garage_from_pause && options->text_language < 0 && !options->custom_gamerpic &&
-        !options->unlock_treasure_map && !options->autodrive) {
-        return 1;
-    }
+    (void)options;
     HMODULE pinned_module;
     if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
                            (LPCWSTR)(uintptr_t)garage_callback_address(), &pinned_module)) {
@@ -235,7 +267,7 @@ static void write_patch_sites(const PatchTransaction *transaction, int rollback)
         }
         const unsigned char *bytes = rollback ? original_bytes[index] : target;
         unsigned char *address = transaction->game_image + patch->rva;
-        if (index >= FIXED_PATCH_COUNT) {
+        if (index >= FIXED_PATCH_COUNT && patch->size == sizeof(uintptr_t)) {
             uintptr_t callback;
             memory_copy(&callback, bytes, sizeof(callback));
             *(volatile uintptr_t *)address = callback;
@@ -245,16 +277,22 @@ static void write_patch_sites(const PatchTransaction *transaction, int rollback)
     }
 }
 
+static void commit_feature_options(const ModOptions *options) {
+    garage_commit_options(options);
+    road_set_enabled(options->snap_car_to_road);
+    drift_camera_commit_options(options);
+    photo_sampling_commit_options();
+    minimap_set_follow_camera(options->minimap_follows_camera);
+}
+
 static int commit_transaction(const PatchTransaction *transaction) {
     write_patch_sites(transaction, 0);
-    language_write_changes(0);
     int flushed =
         FlushInstructionCache(GetCurrentProcess(), transaction->game_image, GAME_IMAGE_SIZE) != 0;
     if (flushed) {
-        language_commit_options(transaction->options);
-        status_set("OK: requested tweaks applied in memory. The EXE file was not changed.");
+        commit_feature_options(transaction->options);
+        status_set("OK: requested tweaks applied in memory.");
     } else {
-        language_write_changes(1);
         write_patch_sites(transaction, 1);
         FlushInstructionCache(GetCurrentProcess(), transaction->game_image, GAME_IMAGE_SIZE);
         status_set("REFUSED: instruction-cache flush failed. Patch bytes rolled back.");
@@ -272,22 +310,27 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
         return 0;
     }
     if (!options->enabled) {
-        status_set("DISABLED: no memory changes made. Existing EXE patches remain active.");
+        status_set("DISABLED: no memory changes made. Existing EXE patches remain "
+                   "active.");
         return 1;
     }
-    if (options->text_language < LANGUAGE_AUTO || options->text_language >= LANGUAGE_COUNT ||
-        options->text_language == 1 ||
-        (options->audio_language != LANGUAGE_AUTO &&
-         !language_supports_audio(options->audio_language))) {
-        status_set("REFUSED: invalid language selection. No patches applied.");
+    if (options->photo_mode_samples < 0 || options->photo_mode_samples > 4096 ||
+        (options->photo_mode_samples > 0 && options->photo_mode_samples < 16)) {
+        status_set("REFUSED: invalid graphics selection. No patches applied.");
         return 0;
     }
 
     garage_prepare_hook(game_image);
-    language_prepare_hook(game_image, options);
     road_prepare_hook(game_image);
     gamerpic_prepare_hook(game_image);
     treasure_map_prepare_hook(game_image);
+    minimap_prepare_hook(game_image);
+    photo_sampling_prepare_patch(options);
+    camera_fov_prepare_hooks(game_image);
+    rims_prepare_hook(game_image);
+    drift_camera_prepare_hook(game_image);
+    video_options_prepare_hooks(game_image);
+    media_overrides_prepare_hook(game_image);
     autodrive_prepare_hooks(game_image, options);
 
     PatchTransaction transaction;
@@ -296,16 +339,14 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
     transaction.page_count = 0;
     transaction.writable_page_count = 0;
     transaction.changed_count = 0;
-    if (!validate_patch_sites(&transaction) ||
-        !language_prepare_existing_objects(game_image, options)) {
+    if (!validate_patch_sites(&transaction)) {
         return 0;
     }
-    transaction.changed_count += language_count_changes();
     if (!pin_callback_module(options)) {
         return 0;
     }
     if (!transaction.changed_count) {
-        language_commit_options(options);
+        commit_feature_options(options);
         status_set("OK: all requested tweaks already match the loaded executable.");
         return 1;
     }

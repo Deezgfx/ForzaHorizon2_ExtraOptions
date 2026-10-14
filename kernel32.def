@@ -27,4 +27,11 @@ EXPORTS
     LoadLibraryExW
     GetProcAddress
     FreeLibrary
-        
+    GetFileAttributesW
+    FindFirstFileW
+    FindNextFileW
+    FindClose
+    FlushFileBuffers
+    MoveFileExW
+    DeleteFileW
+    GetTickCount64
