@@ -5,14 +5,16 @@
 #include "patches_generated.h"
 #include "support.h"
 
-#define MAX_PATCH_PAGES 64
+typedef struct {
+    uintptr_t address;
+    DWORD original_protection;
+} PatchPage;
 
 typedef struct {
     unsigned char *game_image;
     const ModOptions *options;
     SIZE_T page_size;
-    uintptr_t pages[MAX_PATCH_PAGES];
-    DWORD original_protection[MAX_PATCH_PAGES];
+    PatchPage *pages;
     unsigned page_count;
     unsigned writable_page_count;
     unsigned changed_count;
@@ -66,6 +68,8 @@ static unsigned char original_bytes[ALL_PATCH_COUNT][MAX_PATCH_SIZE];
 #ifdef FH2_TWEAKS_TEST
 static int protect_failure_at = -1;
 static int protect_call_count;
+static int page_allocation_failure;
+static unsigned last_page_count, page_allocations;
 #endif
 
 static const PatchDefinition *patch_at(unsigned index) {
@@ -197,11 +201,45 @@ static int pin_callback_module(const ModOptions *options) {
     return 0;
 }
 
+static size_t patch_page_capacity(const PatchTransaction *transaction) {
+    size_t capacity = 0;
+    for (unsigned index = 0; index < ALL_PATCH_COUNT; ++index) {
+        const PatchDefinition *patch = patch_at(index);
+        if (memory_equal(original_bytes[index], patch_target(patch, transaction->options),
+                         patch->size)) {
+            continue;
+        }
+        uintptr_t address = (uintptr_t)transaction->game_image + patch->rva;
+        size_t first = address / transaction->page_size;
+        size_t last = (address + patch->size - 1) / transaction->page_size;
+        capacity += last - first + 1;
+    }
+    return capacity;
+}
+
+static PatchPage *allocate_patch_pages(size_t capacity) {
+#ifdef FH2_TWEAKS_TEST
+    if (page_allocation_failure) {
+        return NULL;
+    }
+#endif
+    return HeapAlloc(GetProcessHeap(), 0, capacity * sizeof(PatchPage));
+}
+
 static int collect_patch_pages(PatchTransaction *transaction) {
+    transaction->pages = allocate_patch_pages(patch_page_capacity(transaction));
+    if (!transaction->pages) {
+        status_set("REFUSED: cannot allocate patch page tracking. No patches applied.");
+        return 0;
+    }
+#ifdef FH2_TWEAKS_TEST
+    ++page_allocations;
+#endif
     for (unsigned index = 0; index < ALL_PATCH_COUNT; ++index) {
         const PatchDefinition *patch = patch_at(index);
         unsigned char *address = transaction->game_image + patch->rva;
-        if (memory_equal(address, patch_target(patch, transaction->options), patch->size)) {
+        if (memory_equal(original_bytes[index], patch_target(patch, transaction->options),
+                         patch->size)) {
             continue;
         }
         uintptr_t first_page = (uintptr_t)address / transaction->page_size * transaction->page_size;
@@ -209,20 +247,28 @@ static int collect_patch_pages(PatchTransaction *transaction) {
                               transaction->page_size;
         for (uintptr_t page = first_page; page <= last_page; page += transaction->page_size) {
             unsigned existing = 0;
-            while (existing < transaction->page_count && transaction->pages[existing] != page) {
+            while (existing < transaction->page_count &&
+                   transaction->pages[existing].address != page) {
                 ++existing;
             }
             if (existing != transaction->page_count) {
                 continue;
             }
-            if (transaction->page_count == MAX_PATCH_PAGES) {
-                status_set("REFUSED: too many patch pages.");
-                return 0;
-            }
-            transaction->pages[transaction->page_count++] = page;
+            transaction->pages[transaction->page_count++].address = page;
         }
     }
+#ifdef FH2_TWEAKS_TEST
+    last_page_count = transaction->page_count;
+#endif
     return 1;
+}
+
+static void release_patch_pages(PatchTransaction *transaction) {
+    HeapFree(GetProcessHeap(), 0, transaction->pages);
+    transaction->pages = NULL;
+#ifdef FH2_TWEAKS_TEST
+    --page_allocations;
+#endif
 }
 
 static BOOL make_writable(void *address, SIZE_T size, DWORD *previous_protection) {
@@ -239,8 +285,9 @@ static int restore_page_protection(const PatchTransaction *transaction) {
     int restored = 1;
     for (unsigned index = 0; index < transaction->writable_page_count; ++index) {
         DWORD ignored;
-        if (!VirtualProtect((void *)transaction->pages[index], transaction->page_size,
-                            transaction->original_protection[index], &ignored)) {
+        const PatchPage *page = &transaction->pages[index];
+        if (!VirtualProtect((void *)page->address, transaction->page_size,
+                            page->original_protection, &ignored)) {
             restored = 0;
         }
     }
@@ -250,8 +297,9 @@ static int restore_page_protection(const PatchTransaction *transaction) {
 static int make_patch_pages_writable(PatchTransaction *transaction) {
     while (transaction->writable_page_count < transaction->page_count) {
         unsigned index = transaction->writable_page_count;
-        if (!make_writable((void *)transaction->pages[index], transaction->page_size,
-                           &transaction->original_protection[index])) {
+        PatchPage *page = &transaction->pages[index];
+        if (!make_writable((void *)page->address, transaction->page_size,
+                           &page->original_protection)) {
             restore_page_protection(transaction);
             status_set("REFUSED: cannot make every patch page writable. No bytes changed.");
             return 0;
@@ -308,6 +356,9 @@ static int commit_transaction(const PatchTransaction *transaction) {
 }
 
 int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
+#ifdef FH2_TWEAKS_TEST
+    last_page_count = 0;
+#endif
     if (!supported_image(game_image)) {
         status_set("REFUSED: unsupported loaded executable headers. No patches applied.");
         return 0;
@@ -339,6 +390,7 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
     PatchTransaction transaction;
     transaction.game_image = game_image;
     transaction.options = options;
+    transaction.pages = NULL;
     transaction.page_count = 0;
     transaction.writable_page_count = 0;
     transaction.changed_count = 0;
@@ -356,10 +408,12 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
     SYSTEM_INFO system_info;
     GetSystemInfo(&system_info);
     transaction.page_size = system_info.dwPageSize;
-    if (!collect_patch_pages(&transaction) || !make_patch_pages_writable(&transaction)) {
+    if (!collect_patch_pages(&transaction)) {
         return 0;
     }
-    return commit_transaction(&transaction);
+    int applied = make_patch_pages_writable(&transaction) && commit_transaction(&transaction);
+    release_patch_pages(&transaction);
+    return applied;
 }
 
 #ifdef FH2_TWEAKS_TEST
@@ -370,5 +424,17 @@ __declspec(dllexport) int Fh2TestApply(void *base, const ModOptions *options) {
 __declspec(dllexport) void Fh2TestProtectFailure(int index) {
     protect_failure_at = index;
     protect_call_count = 0;
+}
+
+__declspec(dllexport) void Fh2TestPatchPageAllocationFailure(int fail) {
+    page_allocation_failure = fail;
+}
+
+__declspec(dllexport) unsigned Fh2TestPatchPageCount(void) {
+    return last_page_count;
+}
+
+__declspec(dllexport) unsigned Fh2TestPatchPageAllocations(void) {
+    return page_allocations;
 }
 #endif
