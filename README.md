@@ -34,7 +34,6 @@ Night lights can be toggled by just pressing the right-stick.
 Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary.
 
 Important: The 3 cars with proper roof animations (BMW Z4 iDrive, Mazda MX-5 (2013), and Ferrari California) will look broken if you are using vanilla car model quality. Set "Car Detail" to High or Ultra in Azimuth.
-The models will still look broken in car meets as the LOD1 is forced there. I will report this to the Azimuth developer instead of having the mod mess with that.
 
 Important #2: This is a rather experimental feature, so it doesn't look perfect in some cars due to the way the ForzaVista animations were authored.
 The Lotus Exige, for example, will have its roof floating above the car. It's beyond the view of the camera but you will spot its shadow. This will be looked into in future updates.
