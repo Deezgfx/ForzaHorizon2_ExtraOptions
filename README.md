@@ -8,8 +8,9 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
  - Drift Camera (as seen in Forza Horizon 4/5/6).
  - FOV Sliders.
  - Roof toggle for supported cars during free-roam.
- - Night lights toggle for all cars.
+ - Lights toggle for all cars.
  - Custom spawn locations.
+ - All Stock Rims for All Cars.
  - All DLC Packs Unlocked.
  - VIP Status & Treasure Map Unlocks.
  - 4K Liveries w/ Enhanced Sampling.
