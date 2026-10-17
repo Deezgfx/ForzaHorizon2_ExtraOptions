@@ -42,6 +42,9 @@ Turn signals can be engaged by holding D-Pad Left/Right for 1 second.
 
 They will de-engage once a turn is made and the steering is centered.
 
+Note: Some cars have glitched turn signals. This is not a bug with the mod, just an issue with how the assets were authored.
+Cars that have been confirmed to have glitched turn signals: Focus RS '09, Corvette ZR1 '09, Carrera GT '03, Cayman GTS '15.
+
 ### Roofs
 Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary.
 
