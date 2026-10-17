@@ -12,6 +12,7 @@ import subprocess
 import re
 import struct
 import time
+from generate_data import generate
 
 SOURCE = Path(__file__).resolve().parent
 COMMON_SOURCES = [
@@ -32,6 +33,7 @@ COMMON_SOURCES = [
     "features/rims.c",
     "features/return_garage.c",
     "features/stock_wheels.c",
+    "features/wheel_variants.c",
     "features/drift_camera.c",
     "features/video_settings.c",
     "features/camera_fov.c",
@@ -248,6 +250,7 @@ def build(compiler, output, directory, options):
 
 def main():
     options = parse_arguments()
+    generate()
     compiler = options.zig.resolve()
     filename = (
         "fh2-extra-options-test.dll"

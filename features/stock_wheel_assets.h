@@ -8,7 +8,6 @@
 typedef struct {
     const char *paths[4];
 } StockWheelLayout;
-
 typedef struct {
     const char *name, *donor;
     uint8_t model_layout, texture_layout;
@@ -144,7 +143,6 @@ enum {
     AO_SHARED_WHEEL_NAME,
     AO_LOCAL_REAR,
     AO_AUD_S4_04,
-    AO_LOCAL_WHEEL_LF,
     AO_SHARED_UNDERSCORE,
     AO_CHR_GTX_71,
     AO_DOD_CHALLENGER392_H2_12,
@@ -171,12 +169,12 @@ enum {
     AO_NIS_GSHOCK_370Z_10,
     AO_NIS_JUKEPRINGLES_14,
     AO_PG_BOXTRUCK_14,
-    AO_PG_BUS_14,
     AO_PON_TRANSAMGTA_87,
     AO_REN_CLIOWILLIAMS_93,
     AO_RUF_YELLOWBIRD_87,
     AO_SUB_WRXSTI_05,
     AO_VW_SCIROCCO16V_88,
+    AO_VW_SCIROCCOS_81,
 };
 
 static const StockWheelLayout stock_texture_layouts[] = {
@@ -189,7 +187,6 @@ static const StockWheelLayout stock_texture_layouts[] = {
         "_library\\textures\\libraryao\\wheels\\{wheel}_wheellf_ao.swatchbin")}},
     [AO_LOCAL_REAR] = {{WHEEL_SAME("{car}\\textures\\ao\\{car}_wheellr_ao.swatchbin")}},
     [AO_AUD_S4_04] = {{WHEEL_SAME("{car}\\textures\\ao\\glass_ao.swatchbin")}},
-    [AO_LOCAL_WHEEL_LF] = {{WHEEL_SAME("{car}\\textures\\ao\\{car}_wheelLF_AO.swatchbin")}},
     [AO_SHARED_UNDERSCORE] = {{WHEEL_SAME(
         "_library\\textures\\libraryao\\wheels\\{car}_wheel_lf_ao.swatchbin")}},
     [AO_CHR_GTX_71] = {{WHEEL_SAME(
@@ -238,7 +235,6 @@ static const StockWheelLayout stock_texture_layouts[] = {
     [AO_NIS_JUKEPRINGLES_14] = {{WHEEL_SAME(
         "{car}\\textures\\ao\\nis_juke_14_wheellf_ao.swatchbin")}},
     [AO_PG_BOXTRUCK_14] = {{WHEEL_SAME("_library\\textures\\libraryao\\default_ao.swatchbin")}},
-    [AO_PG_BUS_14] = {{WHEEL_SAME("{car}\\textures\\ao\\glass_ao.swatchbin")}},
     [AO_PON_TRANSAMGTA_87] = {{WHEEL_SAME("{car}\\textures\\ao\\wheel_lf_ao.swatchbin")}},
     [AO_REN_CLIOWILLIAMS_93] = {{WHEEL_SAME(
         "{car}\\textures\\ao\\ren_cliowilliam_93_wheellf_ao.swatchbin")}},
@@ -250,6 +246,7 @@ static const StockWheelLayout stock_texture_layouts[] = {
     [AO_VW_SCIROCCO16V_88] = {{WHEEL_FRONT_REAR(
         "{car}\\textures\\ao\\vw_scirocco16_88_wheellf_ao.swatchbin",
         "{car}\\textures\\ao\\vw_scirocco16_88_wheellr_ao.swatchbin")}},
+    [AO_VW_SCIROCCOS_81] = {{WHEEL_SAME("{car}\\textures\\ao\\{car}_wheelLF_AO.swatchbin")}},
 };
 
 #undef WHEEL_SAME
@@ -515,6 +512,7 @@ static const StockWheelAssets stock_wheels[] = {
     {"NIS_510_70", NULL, MODEL_LIBRARY_UNDERSCORE, AO_SHARED_UNDERSCORE},
     {"NIS_Fairlady432Z_69", NULL, MODEL_LIBRARY, AO_SHARED},
     {"NIS_FairladyZ_03", "NIS_FairladyZTF_03", MODEL_LIBRARY_WHEEL_NAME, AO_SHARED_WHEEL_NAME},
+    {"NIS_FairladyZFF_02", NULL, MODEL_LIBRARY_FRONT_REAR, AO_LOCAL_FRONT_REAR},
     {"NIS_FairladyZvSTwinTurbo_94", NULL, MODEL_LIBRARY_UNDERSCORE_LEFT_RIGHT,
      AO_SHARED_UNDERSCORE},
     {"NIS_GShock_370Z_10", NULL, MODEL_NIS_GSHOCK_370Z_10, AO_NIS_GSHOCK_370Z_10},
@@ -534,7 +532,7 @@ static const StockWheelAssets stock_wheels[] = {
     {"PAG_Huayra_12", NULL, MODEL_LIBRARY_FOUR_CORNERS, AO_SHARED_FRONT_REAR},
     {"PAG_ZondaCinque_09", NULL, MODEL_LIBRARY_FRONT_REAR, AO_SHARED_FRONT_REAR},
     {"PG_BoxTruck_14", NULL, MODEL_LIBRARY_FOUR_CORNERS, AO_PG_BOXTRUCK_14},
-    {"PG_BUS_14", NULL, MODEL_PG_BUS_14, AO_PG_BUS_14},
+    {"PG_BUS_14", NULL, MODEL_PG_BUS_14, AO_AUD_S4_04},
     {"PLY_CudaFast7_70", NULL, MODEL_LIBRARY_FRONT_REAR, AO_LOCAL_FRONT_REAR},
     {"PLY_RoadRunnerFast7_70", NULL, MODEL_LIBRARY, AO_LOCAL},
     {"PON_FirebirdTransAm_77", NULL, MODEL_LIBRARY, AO_SHARED},
@@ -603,7 +601,7 @@ static const StockWheelAssets stock_wheels[] = {
     {"VW_RabbitGTI_84", NULL, MODEL_LIBRARY, AO_SHARED},
     {"VW_Scirocco16v_88", NULL, MODEL_LIBRARY, AO_VW_SCIROCCO16V_88},
     {"VW_SciroccoR_11", NULL, MODEL_LIBRARY, AO_SHARED},
-    {"VW_SciroccoS_81", NULL, MODEL_SCENE, AO_LOCAL_WHEEL_LF},
+    {"VW_SciroccoS_81", NULL, MODEL_SCENE, AO_VW_SCIROCCOS_81},
     {"VW_Type2_63", NULL, MODEL_LIBRARY, AO_LOCAL},
 };
 
