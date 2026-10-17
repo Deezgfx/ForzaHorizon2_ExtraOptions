@@ -7,7 +7,7 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
  - Drift Camera (as seen in Forza Horizon 4/5/6).
  - FOV sliders for every camera type.
  - Roof toggle for supported cars during free-roam.
- - Lights and turn-signals toggles for all cars.
+ - Lights, hazards, and turn-signal toggles for all cars.
  - New rim style category with all stock rims.
  - Custom spawn locations.
  - "mediapc" modding folder support.
@@ -57,9 +57,9 @@ Cockpit drift camera is enabled by default.
 ### Vehicle Lights
 Lights can be toggled by clicking the right-stick.
 
-Turn signals can be engaged by holding D-Pad Left/Right for 1 second.
+Hazards can be toggled by tapping D-Pad Up.
 
-They will de-engage once a turn is made and the steering is centered.
+Turn signals can be engaged by holding D-Pad Left/Right for 1 second; They will de-engage once a turn is made and the steering is centered.
 
 Note: Some cars have glitched turn signals. More info here: [Turn Signals Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/Turn-Signals)
 
