@@ -61,17 +61,10 @@ Turn signals can be engaged by holding D-Pad Left/Right for 1 second.
 
 They will de-engage once a turn is made and the steering is centered.
 
-Note: Some cars have glitched turn signals. This is not a bug with the mod, just an issue with how the assets were authored.
-Cars that have been confirmed to have glitched turn signals: Focus RS '09, Corvette ZR1 '09, Carrera GT '03, Cayman GTS '15.
+Note: Some cars have glitched turn signals. More info here: [Turn Signals Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/Turn-Signals)
 
 ### Roofs
-Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary.
-
-Note: The 3 cars with proper roof animations (BMW Z4 iDrive, Mazda MX-5 (2013), and Ferrari California) will look broken if you are using vanilla car model quality. Set "Car Detail" to High or Ultra in Azimuth.
-The models will still look broken in car meets as the LOD1 is forced there. I will report this to the Azimuth developer instead of having the mod mess with that.
-
-Note #2: This is a rather experimental feature, so it doesn't look perfect in some cars due to the way the ForzaVista animations were authored.
-The Lotus Exige, for example, will have its roof floating above the car. It's beyond the view of the camera but you will spot its shadow. This will be looked into in future updates.
+Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary. More info here: [Roof Toggle Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/Roofs)
 
 # Custom gamerpic 
 You can edit the "Gamerpic.png" image located where you extracted the mod files to with any image you like and it will be used as your avatar in-game.
