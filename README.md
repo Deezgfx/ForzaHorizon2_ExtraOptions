@@ -13,7 +13,7 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
  - "mediapc" modding folder support.
  
 # Enhancements
- - Intro skip.
+ - Skip developer opening videos.
  - All DLC packs properly unlocked.
  - VIP status & "Treasure Map" unlocks.
  - Toggle for 4K liveries w/ enhanced sampling.
