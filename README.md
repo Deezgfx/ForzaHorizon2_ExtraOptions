@@ -2,7 +2,7 @@
 A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds several tweaks to the game.
 
 # WARNING
-An individual or group of people is trying to use the mod's name to perform a scan that adds a keylogger to your computer. There is **NO** "All-In-One" installation tutorial and anything that requires you to insert and run things on your PowerShell is a scam.
+An individual or group of people is trying to use Forza Horizon 2 and the mod's name to perform a scan that adds a keylogger to your computer. There is **NO** "All-In-One" installation tutorial and anything that requires you to insert and run things on your PowerShell is a **scam.**
 
 # Features
  - Change your car anywhere.
