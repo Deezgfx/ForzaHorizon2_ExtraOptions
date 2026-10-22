@@ -69,7 +69,7 @@ Turn signals can be engaged by holding D-Pad Left/Right for 1 second; They will 
 Note: Some cars have glitched turn signals. More info here: [Turn Signals Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/Turn-Signals)
 
 ### Roofs
-Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary. More info here: [Roof Toggle Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/Roofs)
+Roofs can be toggled by pressing and holding the right-stick for 3 seconds while stationary. More info at the [Oddities Wiki Page](https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/wiki/4.-Oddities)
 
 # Custom gamerpic 
 You can edit the "Gamerpic.png" image located where you extracted the mod files to with any image you like and it will be used as your avatar in-game.
