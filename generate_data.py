@@ -27,6 +27,7 @@ SUPPORTED_GROUPS = {
     "RIMS",
     "DRIFT_CAMERA",
     "VIDEO_OPTIONS",
+    "BACKGROUND",
 }
 
 

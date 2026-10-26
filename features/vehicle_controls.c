@@ -1,4 +1,5 @@
 #include "vehicle_controls.h"
+#include "air_ride.h"
 #include "blinkers.h"
 #include "autodrive_game.h"
 #include "features.h"
@@ -118,6 +119,7 @@ void vehicle_controls_bind(unsigned char *image) {
     }
     game_image = image;
     blinkers_bind(image, clock_milliseconds);
+    air_ride_bind(image);
     roof_fade_prepare_hook(image);
     uintptr_t original = (uintptr_t)(image + 0x2a9400);
     uintptr_t replacement = (uintptr_t)vehicle_update;
@@ -548,6 +550,7 @@ static void vehicle_update(void *self, float dt, float frame_dt, unsigned frame)
     int owned = local_car == self;
     if (owned) {
         blinkers_tick(local_car, autodrive_game_window_focused(), clock_milliseconds());
+        air_ride_tick(local_car, autodrive_game_window_focused(), clock_milliseconds());
         close_roof_for_car_meet(local_car);
         vehicle_controls_tick(local_car, autodrive_game_window_focused());
         maintain_controls(self);

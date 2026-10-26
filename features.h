@@ -21,6 +21,8 @@ extern PatchDefinition drift_camera_view_hook_patches[4];
 extern PatchDefinition media_overrides_hook_patch;
 extern PatchDefinition vehicle_controls_hook_patch;
 extern PatchDefinition blinkers_radio_hook_patch;
+extern PatchDefinition background_focus_hook_patch;
+void background_focus_prepare_hook(unsigned char *game_image);
 extern PatchDefinition aero_tuning_hook_patches[2];
 void aero_tuning_prepare_hooks(unsigned char *image);
 extern PatchDefinition autodrive_hook_patches[12];

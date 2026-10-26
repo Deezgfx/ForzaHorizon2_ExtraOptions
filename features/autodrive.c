@@ -1,4 +1,5 @@
 #include "autodrive_game.h"
+#include "air_ride.h"
 #include "game_input.h"
 #include "autodrive_notice.h"
 #include "autodrive_ui.h"
@@ -103,7 +104,8 @@ static void autodrive_tick(void *satnav, float dt, int f2, int escape, int focus
     f2_was_down = f2;
     void *controller;
     int down = autodrive_game_dpad_down(&controller);
-    if (down < 0 || controller != previous_controller || !focused) {
+    if (down < 0 || controller != previous_controller || !focused ||
+        air_ride_claims_controller()) {
         pad_blocked = 1;
     } else if (!down) {
         pad_blocked = 0;

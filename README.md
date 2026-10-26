@@ -56,3 +56,31 @@ The installation is different depending on the translation layer you're using.
 
 # AI Usage Disclosure
 Codex was used in this project to create the DLL. The actual research was done manually, mostly based on things I already toyed with in the other titles from the series, but I don't yet have the C language knowledge to code something like this fully from scratch (I was initially editing the raw executable). Leaving this here as I believe people have the right to know.
+
+## FH2 Air Ride (experimental; first in-game test passed)
+
+Live front/rear ride-height control for your own car: smooth travel, air-out, a return to the
+spawned tune, five stance presets, and keyboard and controller bindings (`[AirRide]` in the
+INI). It drives the game's own native tuning re-apply (`CCarDynamics` slot `0x238`) with the
+car's own ride-height range. Every native function it calls is checked by its code bytes at
+startup.
+
+Defaults: Home/End front, Page Up/Down rear, Insert/Delete both, F5 air-out, F6 stock, F8/F7
+presets, F9 full lift. On a controller: double-tap LB (L1) to air out, double-tap LB again for a
+full lift, double-tap and hold LB to go back to the car's own ride height. Single presses are
+left to the game. Air-out and lift go 50 % beyond the game's own limits (`ExtraDropPercent`,
+`ExtraLiftPercent`; experimental).
+
+Sound effects: an air-out blast, a vent hiss while lowering and a compressor while raising
+(`Sounds`, `SoundVolume`). The mod generates them, and you can replace them with your own
+`AirRide_AirOut.wav`, `AirRide_Down.wav` and `AirRide_Up.wav` beside the INI. They play through
+Windows, not the game's audio. Not tested in game yet.
+
+Requires Azimuth 0.9.10. Install `winmm.dll` and the INI next to `azimuth.exe`, and keep
+Azimuth's original `azimuth-tls.dll` in `data\bin`. The code paths are verified against the
+executable and covered by automated tests. Keyboard height changes are tested in game; the
+controller double taps, extra drop/lift and sounds are not yet.
+See `AIR_RIDE.md` for the evidence, the list of what is tested and what is not, and
+troubleshooting.
+
+`[Global] KeepRunningInBackground=1` stops the game pausing when its window loses focus (tested in game; off by default).

@@ -1,5 +1,6 @@
 #include "patch_engine.h"
 #include "features.h"
+#include "features/air_ride.h"
 #include "features/autodrive_notice.h"
 #include "features/roof_fade.h"
 #include "patches_generated.h"
@@ -67,7 +68,8 @@ static const PatchDefinition *const callback_patches[] = {&garage_hook_patch,
                                                           &camera_fov_hook_patches[3],
                                                           &camera_fov_hook_patches[4],
                                                           &camera_fov_hook_patches[5],
-                                                          &photo_sampling_patch};
+                                                          &photo_sampling_patch,
+                                                          &background_focus_hook_patch};
 
 enum { ALL_PATCH_COUNT = FIXED_PATCH_COUNT + ARRAY_COUNT(callback_patches) };
 
@@ -111,6 +113,8 @@ static int patch_group_enabled(PatchGroup group, const ModOptions *options) {
         case GROUP_AERO_TUNING:
         case GROUP_VEHICLE_CONTROLS:
             return 1;
+        case GROUP_BACKGROUND:
+            return options->keep_running_in_background;
         case GROUP_AUTODRIVE:
             return options->autodrive;
         case GROUP_TREASURE_MAP:
@@ -345,6 +349,7 @@ static void commit_feature_options(const ModOptions *options) {
     drift_camera_commit_options(options);
     photo_sampling_commit_options();
     minimap_set_follow_camera(options->minimap_follows_camera);
+    air_ride_commit_options(options);
 }
 
 static int commit_transaction(const PatchTransaction *transaction) {
@@ -402,6 +407,7 @@ int patch_engine_apply(unsigned char *game_image, const ModOptions *options) {
     video_options_prepare_hooks(game_image);
     media_overrides_prepare_hook(game_image);
     autodrive_prepare_hooks(game_image, options);
+    background_focus_prepare_hook(game_image);
 
     PatchTransaction transaction;
     transaction.game_image = game_image;

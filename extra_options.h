@@ -15,6 +15,8 @@
 #define GAME_IMAGE_SIZE 0x3a18000u
 #define GAME_TIMESTAMP 0x565501edu
 #define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+#define AIR_RIDE_BINDING_COUNT 11
+#define AIR_RIDE_PRESET_SLOTS 5
 
 typedef enum {
     GROUP_DLC,
@@ -45,7 +47,8 @@ typedef enum {
     GROUP_CLUBS,
     GROUP_RIVALS,
     GROUP_VEHICLE_CONTROLS,
-    GROUP_AERO_TUNING
+    GROUP_AERO_TUNING,
+    GROUP_BACKGROUND
 } PatchGroup;
 
 typedef struct {
@@ -90,5 +93,17 @@ typedef struct {
     int reserved_filtering_override;
     int photo_mode_samples;
     int enable_social, enable_clubs, enable_rivals;
+    int keep_running_in_background;
+    int air_ride, air_ride_freeroam_only, air_ride_remember;
+    int air_ride_max_speed_kmh, air_ride_travel_speed, air_ride_air_out_speed;
+    int air_ride_step, air_ride_hold_speed, air_ride_extra_drop, air_ride_interval_ms;
+    int air_ride_extra_lift;
+    int air_ride_preset_count;
+    int air_ride_sounds, air_ride_sound_volume;
+    int air_ride_keys[AIR_RIDE_BINDING_COUNT];
+    int air_ride_pad_modifier;
+    int air_ride_pad[AIR_RIDE_BINDING_COUNT];
+    int air_ride_pad_lower, air_ride_pad_raise, air_ride_pad_stock_tap, air_ride_double_tap_ms;
+    int air_ride_preset_front[AIR_RIDE_PRESET_SLOTS], air_ride_preset_rear[AIR_RIDE_PRESET_SLOTS];
 } ModOptions;
 #endif

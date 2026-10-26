@@ -12,7 +12,8 @@ python build.py /absolute/path/to/zig.exe
 python build.py /absolute/path/to/zig.exe --azimuth
 ```
 
-The outputs are `../xg.dll` for Mezcal and `../azimuth-tls.dll` for Azimuth.
+The outputs are `../xg.dll` for Mezcal and `../winmm.dll` for Azimuth 0.9.10 (the Azimuth
+adapter in this source is a `winmm.dll` proxy loaded beside `azimuth.exe`).
 `--output PATH` chooses another destination. `--build-dir PATH` keeps the
 intermediate files in that directory; otherwise they use a temporary directory.
 The script lists common modules explicitly and selects one layer adapter.
@@ -37,6 +38,38 @@ configuration I/O, hashing, mapped-image validation, and memory patching.
 Callback resource work and PNG decoding happen on normal game call paths.
 There is no worker thread or startup wait. Callback installation pins the DLL
 before any callback pointer is written.
+
+## Tests
+
+Windows, everything at once (all builds, controller tests, DLL integration tests):
+
+```text
+powershell -ExecutionPolicy Bypass -File scripts\build_and_test.ps1 -Zig C:\path\zig.exe -Python C:\path\python.exe -GameExe C:\path\forza_durango_release_final.exe
+```
+
+Or individually:
+
+```text
+zig cc -std=c11 -Wall -Wextra -Werror -Wno-division-by-zero tests/air_suspension_test.c features/air_suspension.c -o air_suspension_test.exe
+air_suspension_test.exe
+zig cc -std=c11 -Wall -Wextra -Werror tests/air_sound_test.c features/air_sound_synth.c features/air_suspension.c -o air_sound_test.exe
+air_sound_test.exe C:\some\folder
+python build.py C:\path\zig.exe --azimuth --test
+python tests/run_dll_tests.py ..\fh2-extra-options-test.dll C:\path\forza_durango_release_final.exe
+```
+
+`tests/run_dll_tests.py` maps the game executable into memory section by section, at its
+preferred base when possible (otherwise it applies relocations). It never executes game code.
+It then checks the air ride signatures, runs the whole patch transaction against that image,
+and checks INI parsing. It also plays the air ride sounds once through the system `PlaySoundW`
+at low volume (about 4 s). `air_sound_test.exe` with a folder argument writes the built-in
+sounds there as WAV files you can listen to. Set `FH2_USER_INI` to an existing INI to also check that it still loads.
+
+The air ride feature adds no byte patches or runtime hooks. It runs inside the existing
+`local_car_vehicle_controls_update` hook and calls native functions only after `air_ride_bind`
+has matched their code bytes. `KeepRunningInBackground` adds one fixed patch
+(`window_activation_handler`) and one padding thunk (`window_activation_filter_thunk`) in the
+`BACKGROUND` group, both applied only when the option is on. See `AIR_RIDE.md`.
 
 ## Patch data
 

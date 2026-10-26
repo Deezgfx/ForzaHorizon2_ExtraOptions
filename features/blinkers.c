@@ -1,4 +1,5 @@
 #include "blinkers.h"
+#include "air_ride.h"
 #include "autodrive_game.h"
 #include "features.h"
 #include "support.h"
@@ -85,7 +86,7 @@ void blinkers_tick(void *car, int focused, uint64_t now) {
         state.car = car;
     }
     if (!car || !focused || !available || controller != state.controller ||
-        !autodrive_game_has_gameplay_input(controller) ||
+        air_ride_claims_buttons(buttons) || !autodrive_game_has_gameplay_input(controller) ||
         (state.last_tick && now - state.last_tick > 250)) {
         cancel_hold();
         state.controller = controller;
@@ -153,6 +154,10 @@ static unsigned char radio_query(void *controller, unsigned device, unsigned act
         selected != controller || !autodrive_game_has_gameplay_input(controller) ||
         !autodrive_game_window_focused()) {
         return ((RadioQuery)(image + 0x1072500))(controller, device, action, consume);
+    }
+    if (air_ride_claims_buttons(buttons)) {
+        /* The air ride modifier owns the D-pad; no radio station change while it is held. */
+        return 0;
     }
     uint64_t now = milliseconds();
     if ((buttons & (DPAD_LEFT | DPAD_RIGHT) || state.held) && state.last_tick != now) {

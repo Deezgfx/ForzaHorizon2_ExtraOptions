@@ -6,4 +6,5 @@ typedef struct {
 } KeyboardInput;
 
 KeyboardInput game_input_read(void);
+int game_input_key_down(int virtual_key);
 #endif

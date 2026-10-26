@@ -3,7 +3,7 @@
 
 #include "extra_options.h"
 
-typedef enum { SETTING_BOOLEAN, SETTING_MSAA, SETTING_PHOTO_SAMPLES } SettingType;
+typedef enum { SETTING_BOOLEAN, SETTING_MSAA, SETTING_PHOTO_SAMPLES, SETTING_INTEGER } SettingType;
 
 typedef struct {
     const char *section;
@@ -11,6 +11,8 @@ typedef struct {
     const char *log_name;
     size_t field_offset;
     SettingType type;
+    /* SETTING_INTEGER bounds; decimal or 0x-prefixed hexadecimal values are accepted. */
+    unsigned minimum, maximum;
 } SettingDefinition;
 
 extern const SettingDefinition setting_definitions[];

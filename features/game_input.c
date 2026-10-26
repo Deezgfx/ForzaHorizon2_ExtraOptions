@@ -66,6 +66,16 @@ KeyboardInput game_input_read(void) {
     return input;
 }
 
+int game_input_key_down(int virtual_key) {
+#ifdef FH2_TWEAKS_TEST
+    if (use_test_input) {
+        return 0;
+    }
+#endif
+    return virtual_key > 0 && virtual_key < 256 && initialize_input() &&
+           (key_state(virtual_key) & 0x8000) != 0;
+}
+
 #ifdef FH2_TWEAKS_TEST
 __declspec(dllexport) void Fh2TestAutodriveInput(int f2, int escape, int focus) {
     use_test_input = 1;

@@ -1,5 +1,7 @@
 #include "runtime.h"
 #include "features.h"
+#include "features/air_ride.h"
+#include "features/air_sound.h"
 #include "features/video_settings.h"
 #include "logging.h"
 #include "patch_engine.h"
@@ -46,6 +48,11 @@ static void log_enabled_features(const wchar_t *settings_directory, const ModOpt
                "supported roofs.\r\n");
     log_append("SETTINGS: Video and HUD menu hooks installed; awaiting menu "
                "resources.\r\n");
+    air_ride_log_status();
+    if (options->keep_running_in_background) {
+        log_append("WINDOW: focus-loss pause disabled; the game keeps running in the "
+                   "background.\r\n");
+    }
     if (options->custom_gamerpic) {
         log_append("GAMERPIC: converter hook installed; Gamerpic.png is read from "
                    "the settings "
@@ -58,6 +65,7 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
     ModOptions options;
     settings_defaults(&options);
     gamerpic_set_directory(settings_directory);
+    air_sound_set_directory(settings_directory);
     log_reset();
     int initialized = settings_read(settings_directory, &options);
     if (initialized) {

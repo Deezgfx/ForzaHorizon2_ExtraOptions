@@ -2,11 +2,21 @@
 #include "features.h"
 #include "support.h"
 
-#define INI_MAX_SIZE 8192
-#define SETTING(section, key, field, type) {section, key, key, offsetof(ModOptions, field), type}
+#define INI_MAX_SIZE 16384
+#define SETTING(section, key, field, type) {section, key, key, offsetof(ModOptions, field), type, 0, 0}
+#define AIR_RIDE_FLAG(key, field) \
+    {"AirRide", key, "AirRide" key, offsetof(ModOptions, field), SETTING_BOOLEAN, 0, 0}
+#define AIR_RIDE_VALUE(key, field, minimum, maximum) \
+    {"AirRide", key, "AirRide" key, offsetof(ModOptions, field), SETTING_INTEGER, minimum, maximum}
+#define AIR_RIDE_KEY(key, index) AIR_RIDE_VALUE("Key" key, air_ride_keys[index], 0, 255)
+#define AIR_RIDE_PAD(key, index) AIR_RIDE_VALUE("Pad" key, air_ride_pad[index], 0, 0xffff)
+#define AIR_RIDE_PRESET(number, index)                                              \
+    AIR_RIDE_VALUE("Preset" number "Front", air_ride_preset_front[index], 0, 100), \
+        AIR_RIDE_VALUE("Preset" number "Rear", air_ride_preset_rear[index], 0, 100)
 
 const SettingDefinition setting_definitions[] = {
     SETTING("Global", "Enabled", enabled, SETTING_BOOLEAN),
+    SETTING("Global", "KeepRunningInBackground", keep_running_in_background, SETTING_BOOLEAN),
     SETTING("Content", "UnlockDLC", unlock_dlc, SETTING_BOOLEAN),
     SETTING("Content", "OfflineVIP", offline_vip, SETTING_BOOLEAN),
     SETTING("Frontend", "SkipIntro", skip_intro, SETTING_BOOLEAN),
@@ -24,7 +34,54 @@ const SettingDefinition setting_definitions[] = {
     SETTING("Profile", "CustomGamerpic", custom_gamerpic, SETTING_BOOLEAN),
     SETTING("PhotoMode", "FreeCamera", free_photo_camera, SETTING_BOOLEAN),
     SETTING("Files", "EnableMediaOverrides", media_overrides, SETTING_BOOLEAN),
-    {"Autodrive", "Enabled", "AutodriveEnabled", offsetof(ModOptions, autodrive), SETTING_BOOLEAN},
+    {"Autodrive", "Enabled", "AutodriveEnabled", offsetof(ModOptions, autodrive), SETTING_BOOLEAN,
+     0, 0},
+    AIR_RIDE_FLAG("Enabled", air_ride),
+    AIR_RIDE_FLAG("FreeRoamOnly", air_ride_freeroam_only),
+    AIR_RIDE_FLAG("RememberStance", air_ride_remember),
+    AIR_RIDE_VALUE("MaxAdjustSpeedKmh", air_ride_max_speed_kmh, 0, 400),
+    AIR_RIDE_VALUE("TravelSpeed", air_ride_travel_speed, 1, 1000),
+    AIR_RIDE_VALUE("AirOutSpeed", air_ride_air_out_speed, 1, 1000),
+    AIR_RIDE_VALUE("StepPercent", air_ride_step, 1, 50),
+    AIR_RIDE_VALUE("HoldSpeed", air_ride_hold_speed, 1, 1000),
+    AIR_RIDE_VALUE("ExtraDropPercent", air_ride_extra_drop, 0, 100),
+    AIR_RIDE_VALUE("ExtraLiftPercent", air_ride_extra_lift, 0, 100),
+    AIR_RIDE_VALUE("ApplyIntervalMs", air_ride_interval_ms, 16, 1000),
+    AIR_RIDE_VALUE("PresetCount", air_ride_preset_count, 0, AIR_RIDE_PRESET_SLOTS),
+    AIR_RIDE_FLAG("Sounds", air_ride_sounds),
+    AIR_RIDE_VALUE("SoundVolume", air_ride_sound_volume, 0, 100),
+    AIR_RIDE_KEY("FrontUp", 0),
+    AIR_RIDE_KEY("FrontDown", 1),
+    AIR_RIDE_KEY("RearUp", 2),
+    AIR_RIDE_KEY("RearDown", 3),
+    AIR_RIDE_KEY("BothUp", 4),
+    AIR_RIDE_KEY("BothDown", 5),
+    AIR_RIDE_KEY("AirOut", 6),
+    AIR_RIDE_KEY("Stock", 7),
+    AIR_RIDE_KEY("PresetNext", 8),
+    AIR_RIDE_KEY("PresetPrevious", 9),
+    AIR_RIDE_KEY("Lift", 10),
+    AIR_RIDE_VALUE("PadModifier", air_ride_pad_modifier, 0, 0xffff),
+    AIR_RIDE_PAD("FrontUp", 0),
+    AIR_RIDE_PAD("FrontDown", 1),
+    AIR_RIDE_PAD("RearUp", 2),
+    AIR_RIDE_PAD("RearDown", 3),
+    AIR_RIDE_PAD("BothUp", 4),
+    AIR_RIDE_PAD("BothDown", 5),
+    AIR_RIDE_PAD("AirOut", 6),
+    AIR_RIDE_PAD("Stock", 7),
+    AIR_RIDE_PAD("PresetNext", 8),
+    AIR_RIDE_PAD("PresetPrevious", 9),
+    AIR_RIDE_PAD("Lift", 10),
+    AIR_RIDE_VALUE("PadDoubleTapLower", air_ride_pad_lower, 0, 0xffff),
+    AIR_RIDE_VALUE("PadDoubleTapRaise", air_ride_pad_raise, 0, 0xffff),
+    AIR_RIDE_VALUE("PadDoubleTapStock", air_ride_pad_stock_tap, 0, 0xffff),
+    AIR_RIDE_VALUE("DoubleTapMs", air_ride_double_tap_ms, 150, 1000),
+    AIR_RIDE_PRESET("1", 0),
+    AIR_RIDE_PRESET("2", 1),
+    AIR_RIDE_PRESET("3", 2),
+    AIR_RIDE_PRESET("4", 3),
+    AIR_RIDE_PRESET("5", 4),
 };
 
 static const SettingDefinition legacy_settings[] = {
@@ -39,7 +96,7 @@ static const SettingDefinition legacy_settings[] = {
     SETTING("HUD", "MinimapFollowsCamera", minimap_follows_camera, SETTING_BOOLEAN),
     SETTING("PhotoMode", "Samples", photo_mode_samples, SETTING_PHOTO_SAMPLES),
     {"Autodrive", "Cinematic", "AutodriveCinematic", offsetof(ModOptions, autodrive_cinematic),
-     SETTING_BOOLEAN},
+     SETTING_BOOLEAN, 0, 0},
 };
 
 const size_t setting_count = ARRAY_COUNT(setting_definitions);
@@ -78,6 +135,34 @@ void settings_defaults(ModOptions *options) {
         .enable_clubs = 1,
         .enable_rivals = 1,
         .photo_mode_samples = 0,
+        .air_ride = 1,
+        .air_ride_freeroam_only = 1,
+        .air_ride_remember = 1,
+        .air_ride_max_speed_kmh = 30,
+        .air_ride_travel_speed = 35,
+        .air_ride_air_out_speed = 80,
+        .air_ride_step = 2,
+        .air_ride_hold_speed = 25,
+        .air_ride_extra_drop = 50,
+        .air_ride_extra_lift = 50,
+        .air_ride_interval_ms = 50,
+        .air_ride_preset_count = 5,
+        .air_ride_sounds = 1,
+        .air_ride_sound_volume = 80,
+        /* Home/End front, Page Up/Down rear, Insert/Delete both, F5 air-out, F6 stock,
+           F8/F7 presets, F9 full lift. */
+        .air_ride_keys = {0x24, 0x23, 0x21, 0x22, 0x2d, 0x2e, 0x74, 0x75, 0x77, 0x76, 0x78},
+        /* Controller: double-tap LB toggles air-out and full lift, double-tap and hold LB returns
+           to the car's own tune. RB is left alone (it changes the camera in game). The
+           hold-a-modifier combos are unbound by default because the game still sees those
+           buttons. */
+        .air_ride_pad_modifier = 0x0100,
+        .air_ride_pad_lower = 0x0100,
+        .air_ride_pad_raise = 0x0100,
+        .air_ride_pad_stock_tap = 0,
+        .air_ride_double_tap_ms = 300,
+        .air_ride_preset_front = {0, 15, 30, 50, 100},
+        .air_ride_preset_rear = {0, 30, 30, 50, 100},
     };
 }
 
@@ -133,7 +218,42 @@ static const SettingDefinition *find_setting(const char *section, const char *ke
     return NULL;
 }
 
+static int parse_integer(const SettingDefinition *definition, const char *text, int *value) {
+    unsigned base = 10, number = 0;
+    if (text[0] == '0' && (text[1] == 'x' || text[1] == 'X')) {
+        base = 16;
+        text += 2;
+    }
+    if (!*text) {
+        return 0;
+    }
+    for (const char *digit = text; *digit; ++digit) {
+        unsigned next;
+        if (*digit >= '0' && *digit <= '9') {
+            next = (unsigned)(*digit - '0');
+        } else if (base == 16 && *digit >= 'a' && *digit <= 'f') {
+            next = (unsigned)(*digit - 'a' + 10);
+        } else if (base == 16 && *digit >= 'A' && *digit <= 'F') {
+            next = (unsigned)(*digit - 'A' + 10);
+        } else {
+            return 0;
+        }
+        if (number > (definition->maximum - next) / base) {
+            return 0;
+        }
+        number = number * base + next;
+    }
+    if (number < definition->minimum || number > definition->maximum) {
+        return 0;
+    }
+    *value = (int)number;
+    return 1;
+}
+
 static int parse_value(const SettingDefinition *definition, const char *text, int *value) {
+    if (definition->type == SETTING_INTEGER) {
+        return parse_integer(definition, text, value);
+    }
     if (definition->type == SETTING_PHOTO_SAMPLES) {
         unsigned samples = 0;
         if (!*text) {
@@ -264,6 +384,26 @@ invalid:
     return 0;
 }
 
+#ifdef FH2_TWEAKS_TEST
+__declspec(dllexport) int Fh2TestOptionOffset(const char *log_name) {
+    for (size_t index = 0; index < setting_count; ++index) {
+        const char *left = setting_definitions[index].log_name, *right = log_name;
+        while (*left && *left == *right) {
+            ++left;
+            ++right;
+        }
+        if (!*left && !*right) {
+            return (int)setting_definitions[index].field_offset;
+        }
+    }
+    return -1;
+}
+
+__declspec(dllexport) unsigned Fh2TestOptionsSize(void) {
+    return (unsigned)sizeof(ModOptions);
+}
+#endif
+
 int settings_read(const wchar_t *directory, ModOptions *options) {
     settings_defaults(options);
     if (!path_join(ini_path, directory, MOD_INI_NAME)) {
@@ -285,7 +425,7 @@ int settings_read(const wchar_t *directory, ModOptions *options) {
         !ReadFile(file, ini_buffer, (DWORD)size.QuadPart, &bytes_read, NULL) ||
         bytes_read != size.QuadPart) {
         CloseHandle(file);
-        status_set("REFUSED: INI read failed or file exceeds 8192 bytes.");
+        status_set("REFUSED: INI read failed or file exceeds 16384 bytes.");
         return 0;
     }
     CloseHandle(file);

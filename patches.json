@@ -866,6 +866,20 @@
       "description": "Supply actual adjustable downforce and drag ranges for non-adjustable aero parts; preserve stock physics at the default slider value."
     },
     {
+      "id": "window_activation_handler",
+      "group": "background",
+      "rva": 16172567,
+      "offset": 16170007,
+      "original": "488d0d82150000",
+      "patched": "488d0d46160000",
+      "accepted": [
+        "488d0d82150000",
+        "488d0d46160000"
+      ],
+      "runtime_group": "BACKGROUND",
+      "description": "Register the CoreWindow.Activated filter thunk at 0xf6dc64 instead of 0xf6dba0 so window deactivation does not open the pause menu."
+    },
+    {
       "id": "sun_shadow_all_cascades_per_frame",
       "group": "sun_shadows",
       "rva": 18029570,
@@ -1669,6 +1683,15 @@
       "type": "callback_thunk_in_unused_padding",
       "file_normalized": false,
       "option": "Global.Enabled"
+    },
+    {
+      "id": "window_activation_filter_thunk",
+      "rva": 16178276,
+      "original": "cccccccccccccccccccccccc",
+      "runtime_group": "BACKGROUND",
+      "type": "callback_thunk_in_unused_padding",
+      "file_normalized": false,
+      "option": "Global.KeepRunningInBackground"
     }
   ],
   "runtime_data": [
