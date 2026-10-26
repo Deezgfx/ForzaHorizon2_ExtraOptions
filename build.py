@@ -11,9 +11,12 @@ from pathlib import Path
 import subprocess
 import re
 import struct
+import sys
 import time
 
 SOURCE = Path(__file__).resolve().parent
+sys.path.insert(0, str(SOURCE))  # also importable when run with python -I
+from generate_data import generate  # noqa: E402
 COMMON_SOURCES = [
     "dllmain.c",
     "runtime.c",
@@ -32,6 +35,7 @@ COMMON_SOURCES = [
     "features/rims.c",
     "features/return_garage.c",
     "features/stock_wheels.c",
+    "features/wheel_variants.c",
     "features/drift_camera.c",
     "features/video_settings.c",
     "features/camera_fov.c",
@@ -254,6 +258,7 @@ def build(compiler, output, directory, options):
 
 def main():
     options = parse_arguments()
+    generate()
     compiler = options.zig.resolve()
     filename = (
         "fh2-extra-options-test.dll"

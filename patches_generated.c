@@ -49,6 +49,12 @@ static const unsigned char *const alternate_claim_vip_accepted[] = {alternate_cl
 static const unsigned char mainland_boot_skip_car_meet_bytes_0[] = {0x74, 0x18};
 static const unsigned char mainland_boot_skip_car_meet_bytes_1[] = {0xeb, 0x18};
 static const unsigned char *const mainland_boot_skip_car_meet_accepted[] = {mainland_boot_skip_car_meet_bytes_0, mainland_boot_skip_car_meet_bytes_1};
+static const unsigned char hazards_photo_hold_ready_bytes_0[] = {0xe8, 0x78, 0xfd, 0xff, 0xff};
+static const unsigned char hazards_photo_hold_ready_bytes_1[] = {0xe8, 0x5c, 0x1d, 0x00, 0x00};
+static const unsigned char *const hazards_photo_hold_ready_accepted[] = {hazards_photo_hold_ready_bytes_0, hazards_photo_hold_ready_bytes_1};
+static const unsigned char hazards_photo_input_bytes_0[] = {0xe8, 0x3b, 0xa4, 0x70, 0x00};
+static const unsigned char hazards_photo_input_bytes_1[] = {0xe8, 0xcf, 0xe4, 0xff, 0xff};
+static const unsigned char *const hazards_photo_input_accepted[] = {hazards_photo_input_bytes_0, hazards_photo_input_bytes_1};
 static const unsigned char blinker_radio_left_query_bytes_0[] = {0xe8, 0xf3, 0xd7, 0x70, 0x00};
 static const unsigned char blinker_radio_left_query_bytes_1[] = {0xe8, 0xa7, 0x00, 0x00, 0x00};
 static const unsigned char *const blinker_radio_left_query_accepted[] = {blinker_radio_left_query_bytes_0, blinker_radio_left_query_bytes_1};
@@ -190,6 +196,9 @@ static const unsigned char *const front_aero_physics_ranges_accepted[] = {front_
 static const unsigned char rear_aero_physics_ranges_bytes_0[] = {0xe8, 0x8b, 0x9b, 0x00, 0x00};
 static const unsigned char rear_aero_physics_ranges_bytes_1[] = {0xe8, 0xaf, 0x99, 0x00, 0x00};
 static const unsigned char *const rear_aero_physics_ranges_accepted[] = {rear_aero_physics_ranges_bytes_0, rear_aero_physics_ranges_bytes_1};
+static const unsigned char stock_wheel_variant_query_bytes_0[] = {0xe8, 0x2f, 0xdc, 0xfa, 0xfe};
+static const unsigned char stock_wheel_variant_query_bytes_1[] = {0xe8, 0x33, 0xd9, 0xff, 0xff};
+static const unsigned char *const stock_wheel_variant_query_accepted[] = {stock_wheel_variant_query_bytes_0, stock_wheel_variant_query_bytes_1};
 static const unsigned char sun_shadow_all_cascades_per_frame_bytes_0[] = {0x41, 0x8b, 0x86, 0xbc, 0x21, 0x00, 0x00};
 static const unsigned char sun_shadow_all_cascades_per_frame_bytes_1[] = {0xb8, 0x04, 0x00, 0x00, 0x00, 0x90, 0x90};
 static const unsigned char *const sun_shadow_all_cascades_per_frame_accepted[] = {sun_shadow_all_cascades_per_frame_bytes_0, sun_shadow_all_cascades_per_frame_bytes_1};
@@ -276,6 +285,8 @@ const PatchDefinition fixed_patches[FIXED_PATCH_COUNT] = {
     {0x6e9155, 0x6e8755, 5, GROUP_VIP, "wheelspin_claim_vip", wheelspin_claim_vip_bytes_0, wheelspin_claim_vip_bytes_1, wheelspin_claim_vip_bytes_1, wheelspin_claim_vip_accepted, 2},
     {0x6f54d7, 0x6f4ad7, 5, GROUP_VIP, "alternate_claim_vip", alternate_claim_vip_bytes_0, alternate_claim_vip_bytes_1, alternate_claim_vip_bytes_1, alternate_claim_vip_accepted, 2},
     {0x87ac66, 0x87a266, 2, GROUP_BOOT_CAR_MEET, "mainland_boot_skip_car_meet", mainland_boot_skip_car_meet_bytes_0, mainland_boot_skip_car_meet_bytes_1, mainland_boot_skip_car_meet_bytes_1, mainland_boot_skip_car_meet_accepted, 2},
+    {0x963703, 0x962d03, 5, GROUP_VEHICLE_CONTROLS, "hazards_photo_hold_ready", hazards_photo_hold_ready_bytes_0, hazards_photo_hold_ready_bytes_1, hazards_photo_hold_ready_bytes_1, hazards_photo_hold_ready_accepted, 2},
+    {0x964c00, 0x964200, 5, GROUP_VEHICLE_CONTROLS, "hazards_photo_input", hazards_photo_input_bytes_0, hazards_photo_input_bytes_1, hazards_photo_input_bytes_1, hazards_photo_input_accepted, 2},
     {0x964d08, 0x964308, 5, GROUP_VEHICLE_CONTROLS, "blinker_radio_left_query", blinker_radio_left_query_bytes_0, blinker_radio_left_query_bytes_1, blinker_radio_left_query_bytes_1, blinker_radio_left_query_accepted, 2},
     {0x964d38, 0x964338, 5, GROUP_VEHICLE_CONTROLS, "blinker_radio_right_query", blinker_radio_right_query_bytes_0, blinker_radio_right_query_bytes_1, blinker_radio_right_query_bytes_1, blinker_radio_right_query_accepted, 2},
     {0x9be8bb, 0x9bdebb, 4, GROUP_DLC, "ownership_predicate", ownership_predicate_bytes_0, ownership_predicate_bytes_1, ownership_predicate_bytes_1, ownership_predicate_accepted, 2},
@@ -323,6 +334,7 @@ const PatchDefinition fixed_patches[FIXED_PATCH_COUNT] = {
     {0x103c87d, 0x103be7d, 5, GROUP_DRIFT_CAMERA, "drift_camera_chase_spring_call", drift_camera_chase_spring_call_bytes_0, drift_camera_chase_spring_call_bytes_1, drift_camera_chase_spring_call_bytes_1, drift_camera_chase_spring_call_accepted, 2},
     {0x1057635, 0x1056c35, 5, GROUP_AERO_TUNING, "front_aero_physics_ranges", front_aero_physics_ranges_bytes_0, front_aero_physics_ranges_bytes_1, front_aero_physics_ranges_bytes_1, front_aero_physics_ranges_accepted, 2},
     {0x10576b0, 0x1056cb0, 5, GROUP_AERO_TUNING, "rear_aero_physics_ranges", rear_aero_physics_ranges_bytes_0, rear_aero_physics_ranges_bytes_1, rear_aero_physics_ranges_bytes_1, rear_aero_physics_ranges_accepted, 2},
+    {0x108fadc, 0x108f0dc, 5, GROUP_RIMS, "stock_wheel_variant_query", stock_wheel_variant_query_bytes_0, stock_wheel_variant_query_bytes_1, stock_wheel_variant_query_bytes_1, stock_wheel_variant_query_accepted, 2},
     {0x1131c02, 0x1131202, 7, GROUP_SUN_SHADOWS, "sun_shadow_all_cascades_per_frame", sun_shadow_all_cascades_per_frame_bytes_0, sun_shadow_all_cascades_per_frame_bytes_1, sun_shadow_all_cascades_per_frame_bytes_1, sun_shadow_all_cascades_per_frame_accepted, 2},
     {0x1153e5a, 0x115345a, 2, GROUP_SUN_SHADOWS, "sun_shadow_cascade_direction_refresh", sun_shadow_cascade_direction_refresh_bytes_0, sun_shadow_cascade_direction_refresh_bytes_1, sun_shadow_cascade_direction_refresh_bytes_1, sun_shadow_cascade_direction_refresh_accepted, 2},
     {0x11556b5, 0x1154cb5, 2, GROUP_SUN_SHADOWS, "sun_shadow_focus_direction_refresh", sun_shadow_focus_direction_refresh_bytes_0, sun_shadow_focus_direction_refresh_bytes_1, sun_shadow_focus_direction_refresh_bytes_1, sun_shadow_focus_direction_refresh_accepted, 2},

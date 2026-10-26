@@ -1,0 +1,14 @@
+# Build output
+out/
+.build/
+*.dll
+*.zip
+*.obj
+*.o
+*.exe
+__pycache__/
+*.pyc
+
+# Never commit game files
+forza_durango_release_final.exe
+Mount/

@@ -79,6 +79,12 @@ static const char *donor_name(const StockWheelAssets *wheel) {
     return wheel->donor ? wheel->donor : wheel->name;
 }
 
+const char *stock_wheel_donor_name(const char *name, size_t length) {
+    GameString key = {name, 0, length, length < 16 ? 16 : length};
+    const StockWheelAssets *wheel = find_wheel(&key);
+    return wheel ? donor_name(wheel) : NULL;
+}
+
 static int append_path(char *output, size_t capacity, size_t *length, const char *text,
                        int lowercase) {
     while (*text) {

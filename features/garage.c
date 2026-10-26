@@ -404,19 +404,6 @@ static int return_garage_plan(const char *source, uint32_t length, unsigned kind
         return 0;
     }
     plan->edits[plan->count++] = (XmlEdit){at, at, return_garage_flow_xml};
-    uint32_t pre = find_unique_text(source, length, "<state id=\"pre_functional_location\">");
-    if (pre == length) {
-        return 0;
-    }
-    uint32_t pre_end = pre + find_first_text(source + pre, length - pre, "</state>");
-    uint32_t reveal =
-        pre + find_unique_text(source + pre, pre_end - pre,
-                               "<node state=\"ui_screens.show_empty_scene_and_continue\" />");
-    if (pre_end == length || reveal == pre_end) {
-        return 0;
-    }
-    plan->edits[plan->count++] =
-        (XmlEdit){reveal, reveal, "<node state=\"global.wait_for_time\" time=\"4.0\" />\n    "};
     return garage_finalize_edit_plan(plan, length);
 }
 
@@ -560,9 +547,7 @@ void garage_commit_options(const ModOptions *options) {
     spawn_at_festival = options->spawn_at_festival && options->skip_car_meet_on_startup;
 }
 
-void *garage_callback_address(void) {
-    return (void *)frontend_parse_resource_hook;
-}
+void *garage_callback_address(void) { return (void *)frontend_parse_resource_hook; }
 #ifdef FH2_TWEAKS_TEST
 __declspec(dllexport) uint32_t Fh2TestReturnGarageXml(const char *source, uint32_t length,
                                                       unsigned kind, char *output,
