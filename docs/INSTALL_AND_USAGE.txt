@@ -1,4 +1,4 @@
-FH2 AIR RIDE  -  live air suspension for Forza Horizon 2 (PC port via Azimuth)
+FH2 AIR RIDE by Deezogtr  -  live air suspension for Forza Horizon 2 (PC port via Azimuth)
 Built on Forza Horizon 2 Extra Options 0.2.98 by Arthur (RokkuDayo)
 ==============================================================================
 
@@ -211,8 +211,10 @@ Please report problems along with your FH2_ExtraOptions.log.
 9. CREDITS AND LICENSE
 ------------------------------------------------------------------------------
 
-- Forza Horizon 2 Extra Options by Arthur (RokkuDayo). Air Ride is built on its source.
-- Air Ride: live suspension, LB double-tap controls, sounds, extra drop/lift.
+- FH2 Air Ride by Deezogtr.
+- Forza Horizon 2 Extra Options by Arthur (RokkuDayo). Air Ride is built on its source:
+  https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions
+- Azimuth by Almost There Games, the translation layer that runs the game on PC.
 - Air-release sound: "air release" from the freesound_community library (Pixabay),
   edited into the three WAV files. It is used under the Pixabay Content License.
 - Licensed under the GNU General Public License v3 (see LICENSE.txt). The complete

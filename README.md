@@ -1,8 +1,9 @@
 # Forza Horizon 2 - Extra Options
 A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds several tweaks to the game.
 
-> **This is an unofficial fork that adds [FH2 Air Ride](#fh2-air-ride) (live air suspension).**
+> **This is an unofficial fork by Deezogtr that adds [FH2 Air Ride](#fh2-air-ride) (live air suspension).**
 > Extra Options itself is by Arthur (RokkuDayo): https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions.
+> It runs on Azimuth by Almost There Games.
 > This build is Extra Options 0.2.98 with Air Ride included, so it replaces the official DLL; install one or the other, not both.
 > Please report Air Ride problems here, not on the official repository.
 
@@ -121,6 +122,13 @@ PowerShell are needed; anything that asks you to run commands is not this mod.
 release recording by freesound_community on Pixabay, used under the Pixabay Content License.
 Replace them with any 16-bit PCM WAV, or delete them to use the mod's built-in sounds. They play
 through Windows, so the in-game volume sliders don't affect them (`SoundVolume`, 0-100).
+
+### Credits
+
+- **FH2 Air Ride** by Deezogtr.
+- **Forza Horizon 2 Extra Options** by Arthur (RokkuDayo), which Air Ride is built on.
+- **Azimuth** by Almost There Games, the translation layer that runs the game on PC.
+- Air sound recording by freesound_community (Pixabay).
 
 ### Status
 
