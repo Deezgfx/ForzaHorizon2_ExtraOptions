@@ -195,7 +195,7 @@ Uninstall: delete `winmm.dll` from the Azimuth root.
 See `BUILD.md`. Short version on Windows:
 
 ```text
-powershell -ExecutionPolicy Bypass -File scripts\build_and_test.ps1 -Zig C:\path\zig.exe -Python C:\path\python.exe -GameExe "F:\...\forza_durango_release_final.exe"
+powershell -ExecutionPolicy Bypass -File scripts\build_and_test.ps1 -Zig C:\path\zig.exe -Python C:\path\python.exe -GameExe "C:\path\to\forza_durango_release_final.exe"
 ```
 
 ## Requirement: an adjustable suspension
