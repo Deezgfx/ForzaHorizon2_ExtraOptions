@@ -52,6 +52,8 @@ Or individually:
 ```text
 zig cc -std=c11 -Wall -Wextra -Werror -Wno-division-by-zero tests/air_suspension_test.c features/air_suspension.c -o air_suspension_test.exe
 air_suspension_test.exe
+zig cc -std=c11 -Wall -Wextra -Werror tests/pad_gesture_test.c features/pad_gesture.c -o pad_gesture_test.exe
+pad_gesture_test.exe
 zig cc -std=c11 -Wall -Wextra -Werror tests/air_sound_test.c features/air_sound_synth.c features/air_suspension.c -o air_sound_test.exe
 air_sound_test.exe C:\some\folder
 python build.py C:\path\zig.exe --azimuth --test

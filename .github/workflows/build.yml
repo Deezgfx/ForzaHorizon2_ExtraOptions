@@ -1,0 +1,53 @@
+# Builds the Azimuth and Mezcal DLLs and runs the tests that need no game files.
+# The DLL integration tests (tests/run_dll_tests.py) need forza_durango_release_final.exe,
+# which is never in this repository; run them locally with scripts/build_and_test.ps1.
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Zig 0.15.2
+        shell: pwsh
+        run: |
+          $zip = "$env:RUNNER_TEMP\zig.zip"
+          Invoke-WebRequest https://ziglang.org/download/0.15.2/zig-x86_64-windows-0.15.2.zip -OutFile $zip
+          Expand-Archive $zip $env:RUNNER_TEMP
+          "ZIG=$env:RUNNER_TEMP\zig-x86_64-windows-0.15.2\zig.exe" >> $env:GITHUB_ENV
+
+      - name: Build DLLs
+        shell: pwsh
+        run: |
+          python build.py $env:ZIG --azimuth --output dist\Azimuth\winmm.dll
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          python build.py $env:ZIG --output dist\Mezcal\xg.dll
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          git diff --exit-code -- patches_generated.c patches_generated.h
+
+      - name: Host tests (controller, double tap, sounds)
+        shell: pwsh
+        run: |
+          $flags = "-std=c11", "-Wall", "-Wextra", "-Werror"
+          & $env:ZIG cc @flags -Wno-division-by-zero tests/air_suspension_test.c features/air_suspension.c -o air_suspension_test.exe
+          & $env:ZIG cc @flags tests/pad_gesture_test.c features/pad_gesture.c -o pad_gesture_test.exe
+          & $env:ZIG cc @flags tests/air_sound_test.c features/air_sound_synth.c features/air_suspension.c -o air_sound_test.exe
+          foreach ($test in "air_suspension_test", "pad_gesture_test", "air_sound_test") {
+            & ".\$test.exe"
+            if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fh2-air-ride-dlls
+          path: dist/

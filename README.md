@@ -1,6 +1,11 @@
 # Forza Horizon 2 - Extra Options
 A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds several tweaks to the game.
 
+> **This is an unofficial fork that adds [FH2 Air Ride](#fh2-air-ride) (live air suspension).**
+> Extra Options itself is by Arthur (RokkuDayo): https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions.
+> This build is Extra Options 0.2.98 with Air Ride included, so it replaces the official DLL; install one or the other, not both.
+> Please report Air Ride problems here, not on the official repository.
+
 # WARNING
 An individual or group of people is trying to use Forza Horizon 2 and the mod's name to perform a scan that adds a keylogger to your computer. There is **NO** "All-In-One" installation tutorial and anything that requires you to insert and run things on your PowerShell is a **scam.**
 
@@ -78,30 +83,49 @@ The maximum dimensions supported are 2048x2048 and the image must weight less th
 # AI Usage Disclosure
 Codex was used in this project to create the DLL. The actual research was done manually, mostly based on things I already toyed with in the other titles from the series, but I don't yet have the C language knowledge to code something like this fully from scratch (I was initially editing the raw executable). Leaving this here as I believe people have the right to know.
 
-## FH2 Air Ride (experimental; first in-game test passed)
+# FH2 Air Ride
 
-Live front/rear ride-height control for your own car: smooth travel, air-out, a return to the
-spawned tune, five stance presets, and keyboard and controller bindings (`[AirRide]` in the
-INI). It drives the game's own native tuning re-apply (`CCarDynamics` slot `0x238`) with the
-car's own ride-height range. Every native function it calls is checked by its code bytes at
-startup.
+Lower and raise your car's ride height live in free roam, like real air suspension: slam it to
+the ground, lift it up, or go back to your tune, with air-release sounds. It drives the game's
+own native tuning re-apply (`CCarDynamics` slot `0x238`) inside the car's own ride-height range,
+and every native function it calls is checked by its code bytes at startup.
 
-Defaults: Home/End front, Page Up/Down rear, Insert/Delete both, F5 air-out, F6 stock, F8/F7
-presets, F9 full lift. On a controller: double-tap LB (L1) to air out, double-tap LB again for a
-full lift, double-tap and hold LB to go back to the car's own ride height. Single presses are
-left to the game. Air-out and lift go 50 % beyond the game's own limits (`ExtraDropPercent`,
-`ExtraLiftPercent`; experimental).
+**Download** the zip from this fork's [Releases](../../releases) page. It contains the DLL, the
+INI, the sounds and `INSTALL_AND_USAGE.txt` with full instructions.
 
-Sound effects: an air-out blast, a vent hiss while lowering and a compressor while raising
-(`Sounds`, `SoundVolume`). The mod generates them, and you can replace them with your own
-`AirRide_AirOut.wav`, `AirRide_Down.wav` and `AirRide_Up.wav` beside the INI. They play through
-Windows, not the game's audio. Not tested in game yet.
+### Controls
 
-Requires Azimuth 0.9.10. Install `winmm.dll` and the INI next to `azimuth.exe`, and keep
-Azimuth's original `azimuth-tls.dll` in `data\bin`. The code paths are verified against the
-executable and covered by automated tests. Keyboard height changes are tested in game; the
-controller double taps, extra drop/lift and sounds are not yet.
-See `AIR_RIDE.md` for the evidence, the list of what is tested and what is not, and
-troubleshooting.
+| Action | Controller (LB = L1) | Keyboard |
+| --- | --- | --- |
+| Air out (drop to the floor) | Double-tap LB | F5 (press again to air back up) |
+| Full lift | Double-tap LB again | F9 |
+| Back to your car's own ride height | Double-tap LB and hold the 2nd press | F6 |
+| Front / rear / both up and down | | Home/End, Page Up/Down, Insert/Delete |
+| Stance presets | | F8 / F7 |
 
-`[Global] KeepRunningInBackground=1` stops the game pausing when its window loses focus (tested in game; off by default).
+A single press of LB is left to the game. Works in free roam at 30 km/h or less by default.
+All bindings and limits are in the `[AirRide]` section of `FH2_ExtraOptions.ini`.
+
+**Your car needs adjustable suspension:** install the upgrade that unlocks Ride Height in the
+Tuning menu (normally Race springs). Stock springs have no ride-height range.
+
+### Install (Azimuth 0.9.10 only)
+
+Copy `winmm.dll`, `FH2_ExtraOptions.ini` and the three `AirRide_*.wav` files next to
+`azimuth.exe`. Keep Azimuth's **original** `azimuth-tls.dll` in `data\bin`. No scripts and no
+PowerShell are needed; anything that asks you to run commands is not this mod.
+
+### Sounds
+
+`AirRide_AirOut.wav`, `AirRide_Down.wav` and `AirRide_Up.wav` (in `sounds/`) are cut from an air
+release recording by freesound_community on Pixabay, used under the Pixabay Content License.
+Replace them with any 16-bit PCM WAV, or delete them to use the mod's built-in sounds. They play
+through Windows, so the in-game volume sliders don't affect them (`SoundVolume`, 0-100).
+
+### Status
+
+Tested in game on Azimuth 0.9.10: keyboard and LB double-tap height changes, sounds, and
+`[Global] KeepRunningInBackground=1` (no pause menu when the window loses focus; off by
+default). Experimental: `ExtraDropPercent` / `ExtraLiftPercent` (going beyond the game's own
+ride-height limits) and adjusting while moving. See `AIR_RIDE.md` for the evidence, the full list
+of what is tested and troubleshooting, and `BUILD.md` to build it.

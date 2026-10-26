@@ -1,0 +1,222 @@
+FH2 AIR RIDE  -  live air suspension for Forza Horizon 2 (PC port via Azimuth)
+Built on Forza Horizon 2 Extra Options 0.2.98 by Arthur (RokkuDayo)
+==============================================================================
+
+Lower and raise your car's ride height live while you drive around, like real air
+suspension: slam it to the ground, lift it up, or go back to your tune. Air-release and
+compressor sounds play as it moves.
+
+This package is a complete build of Extra Options 0.2.98 with Air Ride added. It REPLACES
+the Extra Options DLL. You do not need to install Extra Options separately, and every
+normal Extra Options feature (DLC unlock, autodrive, all rims, 4K liveries, free photo
+camera, gamerpic, and so on) is still included.
+
+
+------------------------------------------------------------------------------
+1. REQUIREMENTS
+------------------------------------------------------------------------------
+
+- Forza Horizon 2 running through the Azimuth translation layer, version 0.9.10 EXACTLY.
+  Other Azimuth versions are refused with a message and nothing is patched.
+- The supported game executable: forza_durango_release_final.exe from the
+  Anthem_1.0.0.64_x64__8wekyb3d8bbwe package (58,204,160 bytes). The Fast & Furious
+  standalone title is not supported; the mod stays off when you launch it.
+- Windows 10 or 11, 64-bit.
+- Mezcal is NOT supported by this package.
+
+
+------------------------------------------------------------------------------
+2. INSTALL
+------------------------------------------------------------------------------
+
+Back up your Azimuth folder first (at least winmm.dll, FH2_ExtraOptions.ini, and the
+data\bin folder).
+
+  a) Close the game.
+
+  b) Copy EVERYTHING from this zip's "Azimuth" folder into your Azimuth folder,
+     the folder that contains azimuth.exe (NOT data\bin):
+
+        winmm.dll
+        FH2_ExtraOptions.ini
+        AirRide_AirOut.wav
+        AirRide_Down.wav
+        AirRide_Up.wav
+
+     Replace the existing files when asked.
+     Already using Extra Options and have your own settings? Keep your INI and only copy
+     the [AirRide] section from the new INI into it. Without that section, Air Ride uses
+     its default settings.
+
+  c) IMPORTANT: in data\bin, azimuth-tls.dll must be Azimuth's ORIGINAL file from the
+     Azimuth 0.9.10 download (it is tiny, about 4.5 KB). Older Extra Options versions told
+     you to replace it. If yours is bigger than that, put the original back, or the mod
+     will not load.
+
+  d) Start the game through azimuth.exe as usual. If Azimuth asks for the game folder,
+     pick it. If it asked, close the game and start it once more, because the mod reads the
+     game location at startup (see Troubleshooting).
+
+  e) Check that it worked: open FH2_ExtraOptions.log next to azimuth.exe.
+       - Line 2 must NOT say "REFUSED".
+       - Once you are driving in free roam you should see:
+           AIRRIDE: native live-tuning path verified ...
+           AIRRIDE: bound local car model ...
+
+Your Azimuth folder should end up like this:
+
+    Azimuth\
+      azimuth.exe
+      winmm.dll                 <- from this zip
+      FH2_ExtraOptions.ini      <- from this zip
+      AirRide_AirOut.wav        <- from this zip
+      AirRide_Down.wav          <- from this zip
+      AirRide_Up.wav            <- from this zip
+      Gamerpic.png              (optional: your custom avatar)
+      data\bin\azimuth-tls.dll  <- Azimuth's ORIGINAL file, not an Extra Options one
+
+
+------------------------------------------------------------------------------
+3. YOUR CAR NEEDS ADJUSTABLE SUSPENSION
+------------------------------------------------------------------------------
+
+Air Ride moves the car within its own ride-height range. On stock springs the game
+gives most cars NO range at all, so nothing can move. In the log this shows as:
+"local car ride-height data failed validation".
+
+Fix: in the Upgrades menu, install the suspension upgrade that unlocks Ride Height in
+the Tuning menu (normally Race springs), then respawn the car.
+
+
+------------------------------------------------------------------------------
+4. CONTROLS
+------------------------------------------------------------------------------
+
+Air Ride works in free roam only (not in races or car meets), at 30 km/h or slower by
+default.
+
+CONTROLLER (LB = L1 on a PlayStation controller)
+
+    Double-tap LB ........................ Air out (drops the car to the floor)
+    Double-tap LB again .................. Full lift (raises it to the top)
+    Double-tap LB and HOLD the 2nd press . Back to your car's own tuned ride height
+
+  A single press or a normal hold of LB does nothing extra, so LB keeps working for
+  driving. A double tap = two quick presses, each under 0.3 s, with less than 0.3 s
+  between them. The game still sees the presses, so whatever LB does in your control
+  layout also happens.
+
+KEYBOARD
+
+    Home / End ............ front up / down
+    Page Up / Page Down ... rear up / down
+    Insert / Delete ....... both up / down   (tap = small step, hold = smooth)
+    F5 .................... air out (press again to air back up)
+    F9 .................... full lift
+    F6 .................... back to your car's own tuned ride height
+    F8 / F7 ............... next / previous stance preset
+                            (Slammed, Rake, Low, Mid, Lifted)
+
+Every key and button can be changed in FH2_ExtraOptions.ini, [AirRide] section. The INI
+explains each setting.
+
+
+------------------------------------------------------------------------------
+5. USEFUL SETTINGS  (FH2_ExtraOptions.ini, [AirRide])
+------------------------------------------------------------------------------
+
+  ExtraDropPercent=50   How far below the game's lowest ride height air-out goes,
+  ExtraLiftPercent=50   and how far above its highest full lift goes, as a percentage
+                        of the car's own range (0-100). 0 = the game's own limits.
+                        EXPERIMENTAL: lower these if a car clips into the road or
+                        behaves oddly.
+  SoundVolume=60        0-100. The sounds play through Windows, so the in-game volume
+                        sliders don't affect them. Sounds=0 turns them off.
+  MaxAdjustSpeedKmh=30  Highest speed at which the height can change. 0 = parked only.
+  FreeRoamOnly=1        Keep this on.
+  DoubleTapMs=300       Raise it if double taps are hard to hit.
+  RememberStance=1      Each car model keeps its last stance for this play session.
+
+Your own sounds: replace AirRide_AirOut.wav (air out), AirRide_Down.wav (lowering) or
+AirRide_Up.wav (raising) with any 16-bit PCM WAV, 4 MB or less. Delete them to use the
+mod's built-in synthesized sounds instead.
+
+
+------------------------------------------------------------------------------
+6. TROUBLESHOOTING
+------------------------------------------------------------------------------
+
+  No FH2_ExtraOptions.log next to azimuth.exe
+      The DLL did not load. winmm.dll must be next to azimuth.exe, not in data\bin.
+
+  Message box about an unsupported Azimuth build
+      You are not on Azimuth 0.9.10.
+
+  Log line 2: "REFUSED: cannot read the game executable for verification."
+      Azimuth's saved game folder was wrong when the game started (for example, you moved
+      the game). Let Azimuth pick the folder, then close and restart the game once.
+
+  Log line 2: "REFUSED: ..." about the game executable size or hash
+      Wrong game build. Only the Anthem_1.0.0.64 forza_durango_release_final.exe works.
+
+  "AIRRIDE: native tuning code did not match ..."
+      Wrong game build. Air Ride turns itself off; the rest of the mod still works.
+
+  "local car ride-height data failed validation"
+      The car has stock springs. See section 3.
+
+  "adjustment waits for free roam and the configured speed limit"
+      Slow down, leave the race or meet, or raise MaxAdjustSpeedKmh.
+
+  Nothing happens on LB double taps
+      Tap faster, or raise DoubleTapMs to 400. The game window must be focused.
+
+  No sounds
+      Check Sounds=1 and SoundVolume above 0. The sounds show up in the Windows volume
+      mixer under azimuth.exe.
+
+  The car jumps or misbehaves while adjusting on the move
+      Set MaxAdjustSpeedKmh=0 to only adjust when parked.
+
+
+------------------------------------------------------------------------------
+7. UNINSTALL
+------------------------------------------------------------------------------
+
+Delete winmm.dll and the three AirRide_*.wav files from the Azimuth folder (and
+FH2_ExtraOptions.ini if you want). To go back to an earlier Extra Options version,
+restore your backup.
+
+Air Ride never writes to your save file. Your saved tunes are untouched; the ride height
+returns to your tune when the car respawns, unless RememberStance restores it for that
+session.
+
+
+------------------------------------------------------------------------------
+8. WHAT IS TESTED
+------------------------------------------------------------------------------
+
+Tested in game on Azimuth 0.9.10 (1997 BMW M3 with Race springs, free roam):
+  keyboard height changes, LB double-tap air-out and full lift, sounds,
+  KeepRunningInBackground.
+Covered by automated tests against the game executable: every game function the mod
+calls is checked byte for byte at startup, plus INI parsing, controller logic and sound
+handling.
+Not fully tested: adjusting while driving at speed, going far beyond the game's own
+ride-height limits on many different cars, and other controllers' button layouts.
+Please report problems along with your FH2_ExtraOptions.log.
+
+
+------------------------------------------------------------------------------
+9. CREDITS AND LICENSE
+------------------------------------------------------------------------------
+
+- Forza Horizon 2 Extra Options by Arthur (RokkuDayo). Air Ride is built on its source.
+- Air Ride: live suspension, LB double-tap controls, sounds, extra drop/lift.
+- Air-release sound: "air release" from the freesound_community library (Pixabay),
+  edited into the three WAV files. It is used under the Pixabay Content License.
+- Licensed under the GNU General Public License v3 (see LICENSE.txt). The complete
+  source code for this build is in the "source" folder, with build instructions in
+  source\BUILD.md and the technical documentation in source\AIR_RIDE.md.
+
+SHA256SUMS.txt lists the checksum of every file in this package.
