@@ -1,12 +1,12 @@
 FH2 AIR RIDE by Deezogtr  -  live air suspension for Forza Horizon 2 (PC port via Azimuth)
-Built on Forza Horizon 2 Extra Options 0.2.98 by Arthur (RokkuDayo)
+Built on Forza Horizon 2 Extra Options 0.3.2 by Arthur (RokkuDayo)
 ==============================================================================
 
 Lower and raise your car's ride height live while you drive around, like real air
 suspension: slam it to the ground, lift it up, or go back to your tune. Air-release and
 compressor sounds play as it moves.
 
-This package is a complete build of Extra Options 0.2.98 with Air Ride added. It REPLACES
+This package is a complete build of Extra Options 0.3.2 with Air Ride added. It REPLACES
 the Extra Options DLL. You do not need to install Extra Options separately, and every
 normal Extra Options feature (DLC unlock, autodrive, all rims, 4K liveries, free photo
 camera, gamerpic, and so on) is still included.
@@ -16,7 +16,7 @@ camera, gamerpic, and so on) is still included.
 1. REQUIREMENTS
 ------------------------------------------------------------------------------
 
-- Forza Horizon 2 running through the Azimuth translation layer, version 0.9.10 EXACTLY.
+- Forza Horizon 2 running through the Azimuth translation layer, version 1.0.2 (1.0.1 is also accepted).
   Other Azimuth versions are refused with a message and nothing is patched.
 - The supported game executable: forza_durango_release_final.exe from the
   Anthem_1.0.0.64_x64__8wekyb3d8bbwe package (58,204,160 bytes). The Fast & Furious
@@ -49,7 +49,7 @@ data\bin folder).
      its default settings.
 
   c) IMPORTANT: in data\bin, azimuth-tls.dll must be Azimuth's ORIGINAL file from the
-     Azimuth 0.9.10 download (it is tiny, about 4.5 KB). Older Extra Options versions told
+     Azimuth 1.0.2 download (it is tiny, about 4.5 KB). Older Extra Options versions told
      you to replace it. If yours is bigger than that, put the original back, or the mod
      will not load.
 
@@ -150,7 +150,7 @@ mod's built-in synthesized sounds instead.
       The DLL did not load. winmm.dll must be next to azimuth.exe, not in data\bin.
 
   Message box about an unsupported Azimuth build
-      You are not on Azimuth 0.9.10.
+      You are not on Azimuth 1.0.1 or 1.0.2.
 
   Log line 2: "REFUSED: cannot read the game executable for verification."
       Azimuth's saved game folder was wrong when the game started (for example, you moved
@@ -196,7 +196,8 @@ session.
 8. WHAT IS TESTED
 ------------------------------------------------------------------------------
 
-Tested in game on Azimuth 0.9.10 (1997 BMW M3 with Race springs, free roam):
+The Extra Options 0.3.2 / Azimuth 1.0.2 build is not yet tested in game.
+Earlier test on Azimuth 0.9.10 with Extra Options 0.2.98 (1997 BMW M3 with Race springs, free roam):
   keyboard height changes, LB double-tap air-out and full lift, sounds,
   KeepRunningInBackground.
 Covered by automated tests against the game executable: every game function the mod

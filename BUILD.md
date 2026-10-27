@@ -12,7 +12,7 @@ python build.py /absolute/path/to/zig.exe
 python build.py /absolute/path/to/zig.exe --azimuth
 ```
 
-The outputs are `../xg.dll` for Mezcal and `../winmm.dll` for Azimuth 0.9.10 (the Azimuth
+The outputs are `../xg.dll` for Mezcal and `../winmm.dll` for Azimuth 1.0.2 (the Azimuth
 adapter in this source is a `winmm.dll` proxy loaded beside `azimuth.exe`).
 `--output PATH` chooses another destination. `--build-dir PATH` keeps the
 intermediate files in that directory; otherwise they use a temporary directory.

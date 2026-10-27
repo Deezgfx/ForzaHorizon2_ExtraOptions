@@ -6,7 +6,7 @@
 #include <windows.h>
 
 #define MOD_NAME "Forza Horizon 2 Extra Options"
-#define MOD_VERSION "0.2.98"
+#define MOD_VERSION "0.3.2"
 #define MOD_INI_NAME L"FH2_ExtraOptions.ini"
 #define MOD_LOG_NAME L"FH2_ExtraOptions.log"
 #define GAME_EXE_NAME L"forza_durango_release_final.exe"
@@ -48,6 +48,8 @@ typedef enum {
     GROUP_RIVALS,
     GROUP_VEHICLE_CONTROLS,
     GROUP_AERO_TUNING,
+    GROUP_ADDONS,
+    GROUP_ENGINE_SWAPS,
     GROUP_BACKGROUND
 } PatchGroup;
 
@@ -93,6 +95,13 @@ typedef struct {
     int reserved_filtering_override;
     int photo_mode_samples;
     int enable_social, enable_clubs, enable_rivals;
+    int unlock_aero_tuning;
+    int all_engine_swaps;
+    int cars_next_to_home;
+    int local_drivatar_liveries;
+    int max_drivatar_liveries;
+    int menu_turbo_interval_ms;
+    int all_transmission_swaps;
     int keep_running_in_background;
     int air_ride, air_ride_freeroam_only, air_ride_remember;
     int air_ride_max_speed_kmh, air_ride_travel_speed, air_ride_air_out_speed;

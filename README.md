@@ -4,18 +4,20 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
 > **This is an unofficial fork by Deezogtr that adds [FH2 Air Ride](#fh2-air-ride) (live air suspension).**
 > Extra Options itself is by Arthur (RokkuDayo): https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions.
 > It runs on Azimuth by Almost There Games.
-> This build is Extra Options 0.2.98 with Air Ride included, so it replaces the official DLL; install one or the other, not both.
+> This build is Extra Options 0.3.2 with Air Ride included, so it replaces the official DLL; install one or the other, not both.
 > Please report Air Ride problems here, not on the official repository.
 
 # WARNING
 An individual or group of people is trying to use Forza Horizon 2 and the mod's name to perform a scan that adds a keylogger to your computer. There is **NO** "All-In-One" installation tutorial and anything that requires you to insert and run things on your PowerShell is a **scam.**
 
-Note: Issues will be set to "Contributors Only" at times where I am not available until I can sort out the situation with scams being spammed there. If you need assistance, you can find official threads for the mod in the ForzaMods and Mezcal Discord servers.
-
 # Features
+ - Built-in mod loader with addon and hooking support.
  - Change your car anywhere.
+ - "Jump to Manufacturer" on car and rim menus.
+ - All one-off races from online available offline.
  - Autodrive (as seen in Forza Horizon 6).
  - Drift Camera (as seen in Forza Horizon 4/5/6).
+ - Ability to rev your engine in the engine swap menu.
  - FOV sliders for every camera type.
  - Roof toggle for supported cars during free-roam.
  - Lights, hazards, and turn-signal toggles for all cars.
@@ -46,7 +48,7 @@ Azimuth:
 
 Mezcal:
 
- - Extract all the 3 files from the "Mezcal" folder in this ZIP to "Forza Horizon 2\Mount" which is where "forza_durango_release_final.exe" is located.
+ - Extract all the 4 files from the "Mezcal" folder in this ZIP to "Forza Horizon 2\Mount" which is where "forza_durango_release_final.exe" is located.
 
 Note: Add this command if you're running Linux and using Wine: `WINEDLLOVERRIDES="winmm.dll=n,b" %command%`
 More information on Linux support here: https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/pull/35#issuecomment-6233015259
@@ -110,7 +112,7 @@ All bindings and limits are in the `[AirRide]` section of `FH2_ExtraOptions.ini`
 **Your car needs adjustable suspension:** install the upgrade that unlocks Ride Height in the
 Tuning menu (normally Race springs). Stock springs have no ride-height range.
 
-### Install (Azimuth 0.9.10 only)
+### Install (Azimuth 1.0.2)
 
 Copy `winmm.dll`, `FH2_ExtraOptions.ini` and the three `AirRide_*.wav` files next to
 `azimuth.exe`. Keep Azimuth's **original** `azimuth-tls.dll` in `data\bin`. No scripts and no
@@ -132,7 +134,8 @@ through Windows, so the in-game volume sliders don't affect them (`SoundVolume`,
 
 ### Status
 
-Tested in game on Azimuth 0.9.10: keyboard and LB double-tap height changes, sounds, and
+Tested in game on Azimuth 0.9.10 (Extra Options 0.2.98 base); the 0.3.2 / Azimuth 1.0.2
+build passes the same automated tests but is not yet tested in game. Earlier test: keyboard and LB double-tap height changes, sounds, and
 `[Global] KeepRunningInBackground=1` (no pause menu when the window loses focus; off by
 default). Experimental: `ExtraDropPercent` / `ExtraLiftPercent` (going beyond the game's own
 ride-height limits) and adjusting while moving. See `AIR_RIDE.md` for the evidence, the full list

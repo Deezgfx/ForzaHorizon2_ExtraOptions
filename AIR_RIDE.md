@@ -26,7 +26,7 @@ same three steps the native tuning code runs when you change ride height in the 
 | Controller bits other than D-pad Down/Left/Right and RS (`0x2/0x4/0x8/0x80`, already used by Extra Options) follow the XInput layout | **Assumed** |
 | The velocity vector used for the speed limit is in metres per second | **Assumed** |
 | `ExtraDropPercent` / `ExtraLiftPercent` (below the native minimum / above the native maximum) | **Experimental, not tested in game.** 50 by default. |
-| Azimuth adapter | **Built for Azimuth 0.9.10 only** (see Compatibility) |
+| Azimuth adapter | **Built for Azimuth 1.0.1 / 1.0.2** (Extra Options 0.3.2 adapter; see Compatibility). Air Ride on this base is **not yet tested in game**. |
 | Sound synthesis, custom WAV checks, choosing which sound plays | **Tested** (`tests/air_sound_test.c`) |
 | The DLL loads the system `PlaySoundW` and plays the built-in and custom sounds | **Tested** outside the game (`tests/run_dll_tests.py`, real playback at low volume) |
 | Sounds play in game while adjusting | **Not tested in game yet** |
@@ -154,17 +154,16 @@ modified.
 
 - Game: only `forza_durango_release_final.exe` with SHA-256
   `3ec04c6163fb5614e3d351ba0570d39b846041a257715d6340eceb03ccb7f0a3`.
-- Azimuth: this source's adapter (`adapters/azimuth.c`) accepts **only** the Azimuth 0.9.10
-  `azimuth.exe` (3,593,728 bytes, SHA-256
-  `78a5f635b3241918707b5acddeaa96bd59ccb3819490e9218ee152497ca73639`). With any other build it
-  shows a warning and patches nothing.
+- Azimuth: this source's adapter (`adapters/azimuth.c`, from Extra Options 0.3.2) accepts only
+  the Azimuth 1.0.1 and 1.0.2 `azimuth.exe` builds it lists by size and SHA-256 (1.0.2 is
+  9,715,712 bytes). With any other build it shows a warning and patches nothing.
 
-## Installation (Azimuth 0.9.10)
+## Installation (Azimuth 1.0.2)
 
 1. Back up your Azimuth folder.
 2. In `Azimuth\data\bin`, make sure `azimuth-tls.dll` is Azimuth's **original** file from the
-   Azimuth 0.9.10 package. Older Extra Options builds (for example 0.2.68, 154,624 bytes)
-   replaced it. The 0.9.10 adapter needs Azimuth's own TLS helper.
+   Azimuth 1.0.2 package. Older Extra Options builds (for example 0.2.68, 154,624 bytes)
+   replaced it. The adapter needs Azimuth's own TLS helper.
 3. Copy `winmm.dll` and `FH2_ExtraOptions.ini` next to `azimuth.exe` (the Azimuth root
    folder), and move your `Gamerpic.png` there too. `azimuth.exe` imports `WINMM.dll`
    directly, so the proxy must sit beside it. The INI, log and gamerpic are read from the DLL's
@@ -180,7 +179,7 @@ Uninstall: delete `winmm.dll` from the Azimuth root.
 
 - No `FH2_ExtraOptions.log` beside `winmm.dll`: the proxy did not load. Check that it is beside
   `azimuth.exe`.
-- A message box about an unsupported Azimuth build: you are not on Azimuth 0.9.10.
+- A message box about an unsupported Azimuth build: you are not on Azimuth 1.0.1 or 1.0.2.
 - `AIRRIDE: native tuning code did not match…`: wrong game build. Air ride is off; the rest of
   the mod still works.
 - `adjustment waits for free roam and the configured speed limit`: slow down, or raise
