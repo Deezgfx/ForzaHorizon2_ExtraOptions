@@ -7,9 +7,13 @@ An individual or group of people is trying to use Forza Horizon 2 and the mod's 
 Note: Issues will be set to "Contributors Only" at times where I am not available until I can sort out the situation with scams being spammed there. If you need assistance, you can find official threads for the mod in the ForzaMods and Mezcal Discord servers.
 
 # Features
+ - Built-in mod loader with addon and hooking support.
  - Change your car anywhere.
+ - "Jump to Manufacturer" on car and rim menus.
+ - All one-off races from online available offline.
  - Autodrive (as seen in Forza Horizon 6).
  - Drift Camera (as seen in Forza Horizon 4/5/6).
+ - Ability to rev your engine in the engine swap menu.
  - FOV sliders for every camera type.
  - Roof toggle for supported cars during free-roam.
  - Lights, hazards, and turn-signal toggles for all cars.
