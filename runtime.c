@@ -1,5 +1,7 @@
 #include "runtime.h"
 #include "features.h"
+#include "features/addons.h"
+#include "features/plugins.h"
 #include "features/video_settings.h"
 #include "logging.h"
 #include "patch_engine.h"
@@ -9,6 +11,26 @@
 #ifdef FH2_AZIMUTH
 #include "adapters/azimuth_host.h"
 #endif
+
+static void warn_experimental_aero(void) {
+#ifndef FH2_TWEAKS_TEST
+    HMODULE user32 = LoadLibraryExW(L"user32.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    typedef int(WINAPI * MessageBoxFunction)(HWND, LPCWSTR, LPCWSTR, UINT);
+    MessageBoxFunction show =
+        user32 ? (MessageBoxFunction)(uintptr_t)GetProcAddress(user32, "MessageBoxW") : NULL;
+    if (show) {
+        show(NULL,
+             L"Experimental aero tuning is enabled. Using Forza aero ranges can "
+             L"change "
+             L"stock PI and handling, even before adjusting the sliders.\n\n"
+             L"Set UnlockAeroTuning=0 in FH2_ExtraOptions.ini to disable it.",
+             L"Forza Horizon 2 Extra Options", MB_OK | MB_ICONWARNING);
+    }
+    if (user32) {
+        FreeLibrary(user32);
+    }
+#endif
+}
 
 static void log_enabled_features(const wchar_t *settings_directory, const ModOptions *options) {
     log_set_directory(settings_directory);
@@ -33,7 +55,7 @@ static void log_enabled_features(const wchar_t *settings_directory, const ModOpt
                    "file lookup outside DLL initialization.\r\n");
     }
     if (options->autodrive) {
-        log_append("AUTODRIVE: experimental F2 GPS/AI hooks installed; cinematic "
+        log_append("AUTODRIVE: configurable GPS/AI shortcuts installed; cinematic "
                    "delay is 3 "
                    "seconds.\r\n");
     }
@@ -41,9 +63,12 @@ static void log_enabled_features(const wchar_t *settings_directory, const ModOpt
         log_append("UPGRADES: virtual All Rims category enabled; database file "
                    "unchanged.\r\n");
     }
-    log_append("VEHICLE: right-stick press toggles headlights; stationary "
-               "2-second hold toggles "
-               "supported roofs.\r\n");
+    if (options->unlock_aero_tuning) {
+        log_append("WARNING: experimental aero unlock uses Forza aero ranges and "
+                   "can change PI "
+                   "and handling, including at default tuning values.\r\n");
+    }
+    log_append("VEHICLE: configurable shortcuts enabled; roof hold is 1500 ms and signal hold is 500 ms.\r\n");
     log_append("SETTINGS: Video and HUD menu hooks installed; awaiting menu "
                "resources.\r\n");
     if (options->custom_gamerpic) {
@@ -57,6 +82,7 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
                        const wchar_t *settings_directory) {
     ModOptions options;
     settings_defaults(&options);
+    addons_configure(executable_path);
     gamerpic_set_directory(settings_directory);
     log_reset();
     int initialized = settings_read(settings_directory, &options);
@@ -68,6 +94,7 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
     if (initialized && options.enabled) {
         initialized = verify_game_file(executable_path);
     }
+    plugins_configure(game_image, executable_path, initialized && options.enabled);
     if (initialized) {
         initialized = patch_engine_apply(game_image, &options);
     }
@@ -80,6 +107,9 @@ int runtime_initialize(unsigned char *game_image, const wchar_t *executable_path
 #endif
     if (initialized && options.enabled) {
         log_enabled_features(settings_directory, &options);
+        if (options.unlock_aero_tuning) {
+            warn_experimental_aero();
+        }
     }
     return initialized;
 }

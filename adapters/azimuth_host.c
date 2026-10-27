@@ -21,7 +21,7 @@ static const struct {
     AzimuthBuild build;
     uint32_t timestamp, image_size;
 } supported_hosts[] = {
-    {AZIMUTH_0910, 0x6ad14833u, 0x3d3000u},
+    {AZIMUTH_101, 0x6adff280u, 0x9a6000u},
 };
 
 static unsigned host_image_size(AzimuthBuild build) {
