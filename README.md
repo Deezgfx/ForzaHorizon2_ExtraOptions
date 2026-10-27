@@ -4,8 +4,6 @@ A quality-of-life mod for the Xbox One version of Forza Horizon 2 that adds seve
 # WARNING
 An individual or group of people is trying to use Forza Horizon 2 and the mod's name to perform a scan that adds a keylogger to your computer. There is **NO** "All-In-One" installation tutorial and anything that requires you to insert and run things on your PowerShell is a **scam.**
 
-Note: Issues will be set to "Contributors Only" at times where I am not available until I can sort out the situation with scams being spammed there. If you need assistance, you can find official threads for the mod in the ForzaMods and Mezcal Discord servers.
-
 # Features
  - Built-in mod loader with addon and hooking support.
  - Change your car anywhere.
@@ -44,7 +42,7 @@ Azimuth:
 
 Mezcal:
 
- - Extract all the 3 files from the "Mezcal" folder in this ZIP to "Forza Horizon 2\Mount" which is where "forza_durango_release_final.exe" is located.
+ - Extract all the 4 files from the "Mezcal" folder in this ZIP to "Forza Horizon 2\Mount" which is where "forza_durango_release_final.exe" is located.
 
 Note: Add this command if you're running Linux and using Wine: `WINEDLLOVERRIDES="winmm.dll=n,b" %command%`
 More information on Linux support here: https://github.com/RokkuDayo/ForzaHorizon2_ExtraOptions/pull/35#issuecomment-6233015259
