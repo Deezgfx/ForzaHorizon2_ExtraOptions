@@ -6,12 +6,28 @@
 #include "sha256.h"
 #include "support.h"
 
-#define HOST_FILE_SIZE 9692672u
-#define MAP_GAME 0x400e0u
-#define MAP_GAME_CALL 0xa027bu
-#define MAP_GAME_THUNK 0x91170u
-#define STARTUP_RETURN 0x9e950u
 #define FH2_TITLE_ID 0x1a96545bu
+
+typedef struct {
+    AzimuthBuild build;
+    unsigned file_size, map_game, map_call, thunk, startup_return;
+    unsigned char hash[32];
+    const char *success;
+} HostProfile;
+static const HostProfile host_profiles[] = {
+    {AZIMUTH_101, 9692672u, 0x400e0u, 0xa027bu, 0x91170u, 0x9e950u,
+     {0x6e,0x9a,0x22,0x90,0x97,0x15,0x00,0xa1,0x33,0x69,0x99,0x99,0xb3,0x02,0x4e,0xec,
+      0x7b,0xe9,0x3c,0xf5,0xd4,0x11,0x6d,0x18,0xd5,0x4b,0x83,0x72,0xd1,0x11,0x72,0xf7},
+     "AZIMUTH: 1.0.1 initialized for FH2 (1A96545B); native game loader and TLS retained.\r\n"},
+    {AZIMUTH_102, 9715712u, 0x3f2e0u, 0x9f4ebu, 0x903e0u, 0x9dbc0u,
+     {0x42,0x52,0x79,0x64,0xf4,0x8c,0x90,0xa5,0x37,0xf2,0x41,0x42,0x00,0xb8,0x59,0x8a,
+      0xb9,0xa6,0xf9,0x29,0x19,0xbf,0xbe,0x04,0x6d,0xbe,0xcc,0xcb,0x36,0xe7,0xc5,0x97},
+     "AZIMUTH: 1.0.2 initialized for FH2 (1A96545B); native game loader and TLS retained.\r\n"},
+};
+static const HostProfile *host_profile;
+#define MAP_GAME (host_profile->map_game)
+#define MAP_GAME_CALL (host_profile->map_call)
+#define MAP_GAME_THUNK (host_profile->thunk)
 
 typedef void *(*MapGame)(void *, const void *, const void *, const void *);
 typedef int(WINAPI *MessageBoxFunction)(HWND, LPCWSTR, LPCWSTR, UINT);
@@ -22,13 +38,9 @@ static wchar_t mod_directory[PATH_CAPACITY], game_path[PATH_CAPACITY];
 static wchar_t filename[PATH_CAPACITY];
 static unsigned char hash_buffer[16384];
 static int notifications;
-static unsigned char original_call[5] = {0xe8,0x60,0xfe,0xf9,0xff};
+static unsigned char original_call[5];
 static unsigned char installed_call[5], original_thunk[12], installed_thunk[12];
 static unsigned char original_hashes[2][32], installed_hashes[2][32];
-
-static const unsigned char supported_host_hash[32] = {
-  0x6e,0x9a,0x22,0x90,0x97,0x15,0x00,0xa1,0x33,0x69,0x99,0x99,0xb3,0x02,0x4e,0xec,
-  0x7b,0xe9,0x3c,0xf5,0xd4,0x11,0x6d,0x18,0xd5,0x4b,0x83,0x72,0xd1,0x11,0x72,0xf7};
 
 static void notify_refusal(void) {
     ++notifications;
@@ -66,7 +78,7 @@ static void hash_bytes(const void *bytes, unsigned size, unsigned char *digest) 
     sha256_finalize(&hash, digest);
 }
 
-static int verify_host_file(const wchar_t *path) {
+static int verify_host_file(const wchar_t *path, const HostProfile *profile) {
     HANDLE file = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
                               FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     if (file == INVALID_HANDLE_VALUE) return 0;
@@ -75,9 +87,9 @@ static int verify_host_file(const wchar_t *path) {
     unsigned char digest[32];
     DWORD count;
     uint64_t total = 0;
-    int valid = GetFileSizeEx(file, &size) && size.QuadPart == HOST_FILE_SIZE;
+    int valid = GetFileSizeEx(file, &size) && size.QuadPart == profile->file_size;
     sha256_initialize(&context);
-    while (valid && total < HOST_FILE_SIZE) {
+    while (valid && total < profile->file_size) {
         valid = ReadFile(file, hash_buffer, sizeof(hash_buffer), &count, NULL) && count;
         if (valid) {
             sha256_update(&context, hash_buffer, count);
@@ -86,7 +98,7 @@ static int verify_host_file(const wchar_t *path) {
     }
     CloseHandle(file);
     sha256_finalize(&context, digest);
-    return valid && total == HOST_FILE_SIZE && memory_equal(digest, supported_host_hash, 32);
+    return valid && total == profile->file_size && memory_equal(digest, profile->hash, 32);
 }
 
 static int directory_from_module(HMODULE module, wchar_t *directory) {
@@ -207,7 +219,7 @@ static void *on_map_game(void *output, const void *folder, const void *package, 
             nt.OptionalHeader.SizeOfImage != GAME_IMAGE_SIZE || !game_image_is_readable(game)) {
             refuse("REFUSED: Azimuth's mapped game does not match FH2. No game patches applied.");
         } else if (runtime_initialize(game, game_path, mod_directory)) {
-            log_append("AZIMUTH: 1.0.1 initialized for FH2 (1A96545B); native game loader and TLS retained.\r\n");
+            log_append(host_profile->success);
         } else {
             notify_refusal();
         }
@@ -229,7 +241,9 @@ static int arm_loader(unsigned char *host) {
     memory_copy(installed_thunk, jump, sizeof(jump));
     uintptr_t callback = (uintptr_t)on_map_game;
     memory_copy(installed_thunk + 2, &callback, 8);
-    installed_call[0] = 0xe8;
+    original_call[0] = installed_call[0] = 0xe8;
+    int32_t native_delta = (int32_t)(MAP_GAME - MAP_GAME_CALL - 5);
+    memory_copy(original_call + 1, &native_delta, 4);
     int32_t delta = (int32_t)(MAP_GAME_THUNK - MAP_GAME_CALL - 5);
     memory_copy(installed_call + 1, &delta, 4);
     hash_bytes(original_thunk, sizeof(original_thunk), original_hashes[0]);
@@ -243,9 +257,16 @@ static int arm_loader(unsigned char *host) {
 }
 
 static int verify_host(unsigned char *host, const wchar_t *path) {
-    if (azimuth_host_build(host) == AZIMUTH_101 && verify_host_file(path)) return 1;
-    return refuse("REFUSED: unsupported Azimuth build. Extra Options 0.3.0 requires Azimuth 1.0.1 "
-                  "(SHA-256 6e9a2290971500a133699999b3024eec7be93cf5d4116d18d54b8372d11172f7). "
+    AzimuthBuild build = azimuth_host_build(host);
+    for (unsigned i = 0; i < ARRAY_COUNT(host_profiles); ++i) {
+        const HostProfile *profile = &host_profiles[i];
+        if (profile->build == build && verify_host_file(path, profile)) {
+            host_profile = profile;
+            return 1;
+        }
+    }
+    return refuse("REFUSED: unsupported Azimuth build. Extra Options " MOD_VERSION
+                  " supports the inspected Azimuth 1.0.1 and 1.0.2 executables only. "
                   "No game or save compatibility patches applied.");
 }
 
@@ -263,7 +284,7 @@ void azimuth_proxy_start(void *caller) {
     }
     /* File fingerprint once at startup, never on a gameplay or per-file path. */
     if (!verify_host(host, filename)) return;
-    if (caller != host + STARTUP_RETURN) {
+    if (caller != host + host_profile->startup_return) {
         refuse("REFUSED: unexpected Azimuth initialization order. No patches applied.");
         return;
     }
